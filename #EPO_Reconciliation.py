@@ -687,8 +687,23 @@ try:
     filtered_lor_count = filtered_lor_df.count()
     _logger.info(f"{filtered_lor_count} licence of rights.")
 
+    # BUSINESS LOGIC: Filter renewals by date_processed (action/completion date) instead of date_filed
+    # This ensures renewals are reported in the month they were actually processed/completed,
+    # aligning with when the IPO actually receives the fees. This is critical for accurate
+    # financial reconciliation with EPO, especially when form filing date and action completion
+    # date fall in different months/quarters.
+    
+    # Log renewals where date_filed and date_processed cross month boundaries (for audit purposes)
+    cross_month_renewals = renewals_df.filter(
+        (f.col("publication_num").like("EP%")) &
+        (f.month(f.col("date_filed")) != f.month(f.col("date_processed")))
+    )
+    cross_month_count = cross_month_renewals.count()
+    if cross_month_count > 0:
+        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
+    
     filtered_renewals_df = renewals_df.filter( 
-        (f.col("date_filed").between(start_date, end_date)) &
+        (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
@@ -799,8 +814,11 @@ if quarterly:
         .unionByName(restore_status_df, allowMissingColumns=True) \
         .unionByName(lor_status_df, allowMissingColumns=True)
 
-    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_filed", "MMMM yyyy").alias("Month"), 
-            f.date_format("date_filed", "MM").cast("int").alias("Month_Number")) \
+    # BUSINESS LOGIC: Group monthly totals by date_processed (action/completion date)
+    # This ensures renewals are reported in the month they were actually processed/completed,
+    # matching the filtering logic above and aligning with when fees are received by IPO.
+    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_processed", "MMMM yyyy").alias("Month"), 
+            f.date_format("date_processed", "MM").cast("int").alias("Month_Number")) \
         .agg(f.sum("total_epo_amount").alias("Amount")) \
         .orderBy(f.col("Month_Number")) \
         .drop("Month_Number")

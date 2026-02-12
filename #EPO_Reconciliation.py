@@ -692,14 +692,12 @@ try:
     # aligning with when the IPO actually receives the fees. This is critical for accurate
     # financial reconciliation with EPO, especially when form filing date and action completion
     # date fall in different months/quarters.
-    
     filtered_renewals_df = renewals_df.filter( 
         (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
     _logger.info(f"{filtered_renewals_count} renewals.")
-    
     # Log renewals where date_filed and date_processed cross month boundaries (for audit purposes)
     # Check if dates differ by comparing year-month combination to account for year boundaries
     cross_month_renewals = filtered_renewals_df.filter(

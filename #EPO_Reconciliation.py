@@ -687,12 +687,20 @@ try:
     filtered_lor_count = filtered_lor_df.count()
     _logger.info(f"{filtered_lor_count} licence of rights.")
 
+    # Filter by date_processed instead of date_filed to match when fees are received
     filtered_renewals_df = renewals_df.filter( 
-        (f.col("date_filed").between(start_date, end_date)) &
+        (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
     _logger.info(f"{filtered_renewals_count} renewals.")
+    # Log renewals where filing and processing dates are in different months
+    cross_month_renewals = filtered_renewals_df.filter(
+        f.date_format(f.col("date_filed"), "yyyy-MM") != f.date_format(f.col("date_processed"), "yyyy-MM")
+    )
+    cross_month_count = cross_month_renewals.count()
+    if cross_month_count > 0:
+        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
 except Exception as excp:
     _logger.error(f"Unable to filter inputs according to specified date ranges: {excp}.")
     notebook_status = False
@@ -799,8 +807,9 @@ if quarterly:
         .unionByName(restore_status_df, allowMissingColumns=True) \
         .unionByName(lor_status_df, allowMissingColumns=True)
 
-    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_filed", "MMMM yyyy").alias("Month"), 
-            f.date_format("date_filed", "MM").cast("int").alias("Month_Number")) \
+    # Group by date_processed to match filtering logic
+    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_processed", "MMMM yyyy").alias("Month"), 
+            f.date_format("date_processed", "MM").cast("int").alias("Month_Number")) \
         .agg(f.sum("total_epo_amount").alias("Amount")) \
         .orderBy(f.col("Month_Number")) \
         .drop("Month_Number")

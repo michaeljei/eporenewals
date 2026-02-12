@@ -693,21 +693,21 @@ try:
     # financial reconciliation with EPO, especially when form filing date and action completion
     # date fall in different months/quarters.
     
-    # Log renewals where date_filed and date_processed cross month boundaries (for audit purposes)
-    cross_month_renewals = renewals_df.filter(
-        (f.col("publication_num").like("EP%")) &
-        (f.month(f.col("date_filed")) != f.month(f.col("date_processed")))
-    )
-    cross_month_count = cross_month_renewals.count()
-    if cross_month_count > 0:
-        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
-    
     filtered_renewals_df = renewals_df.filter( 
         (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
     _logger.info(f"{filtered_renewals_count} renewals.")
+    
+    # Log renewals where date_filed and date_processed cross month boundaries (for audit purposes)
+    # Check if dates differ by comparing year-month combination to account for year boundaries
+    cross_month_renewals = filtered_renewals_df.filter(
+        f.date_format(f.col("date_filed"), "yyyy-MM") != f.date_format(f.col("date_processed"), "yyyy-MM")
+    )
+    cross_month_count = cross_month_renewals.count()
+    if cross_month_count > 0:
+        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
 except Exception as excp:
     _logger.error(f"Unable to filter inputs according to specified date ranges: {excp}.")
     notebook_status = False

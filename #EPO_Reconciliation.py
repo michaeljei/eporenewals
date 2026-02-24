@@ -16,7 +16,7 @@ _logger.setLevel(logging.INFO)
 
 # ### Parameters
 
-# In[ ]:
+
 
 
 quarterly = True
@@ -27,13 +27,13 @@ silver_datalake = "" #stuksee3fsbdatmibisilver.dfs.core.windows.net
 date_today = "" #2025-01-03
 
 
-# In[ ]:
+
 
 
 notebook_status = True
 
 
-# In[ ]:
+
 
 
 try:
@@ -44,7 +44,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[ ]:
+
 
 
 try:
@@ -68,7 +68,7 @@ except Exception as excp:
 
 # #### Renewal
 
-# In[ ]:
+
 
 
 def get_new_renewals_dataframe():
@@ -117,7 +117,7 @@ def get_legacy_renewals_dataframe():
 
 # #### Restoration
 
-# In[ ]:
+
 
 
 def get_legacy_restored_dataframe():
@@ -158,7 +158,7 @@ def get_new_restored_dataframe():
 
 # #### Licence of Right
 
-# In[ ]:
+
 
 
 def get_legacy_lor_dataframe():
@@ -224,7 +224,7 @@ def get_new_lor_dataframe():
 
 # ### Lapse of Right
 
-# In[ ]:
+
 
 
 def get_legacy_lapsed_dataframe():
@@ -273,7 +273,7 @@ def get_new_lapsed_dataframe():
 
 # ### Functions
 
-# In[ ]:
+
 
 
 @f.udf(returnType=ArrayType(StringType()))
@@ -598,7 +598,7 @@ def process_epo_output(data_df, record_type, filter_condition=None, epo_renewal_
 
 # ### Data Processing
 
-# In[ ]:
+
 
 
 try:
@@ -628,7 +628,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[ ]:
+
 
 
 try:
@@ -653,7 +653,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[ ]:
+
 
 
 _logger.info(f"Combining renewal, restoration and licence of right data.")
@@ -670,14 +670,14 @@ except Exception as excp:
   notebook_status = False
 
 
-# In[ ]:
+
 
 
 _logger.info(f"Determining due date when renewal was paid.")
 renewals_df = calculate_renewal_due_dates(renewals_df)
 
 
-# In[ ]:
+
 
 
 _logger.info(f"Determining renewals with Licence of Right endorsement.")
@@ -689,7 +689,7 @@ renewals_df = renewals_df.withColumn("lor_endorsement", f.when(
     ).otherwise(f.lit("NO"))).drop("A", "D")
 
 
-# In[ ]:
+
 
 
 _logger.info(f"Determining the first and last renewal years endorsed by Licence of Right.")
@@ -741,7 +741,7 @@ combined_lor_df = combined_lor_df.filter(
 )
 
 
-# In[ ]:
+
 
 
 try:
@@ -792,7 +792,7 @@ except Exception as excp:
 
 # ### Output Generation
 
-# In[ ]:
+
 
 
 _logger.info(f"Generating fee totals for period between {start_date} and {end_date}.")
@@ -809,7 +809,7 @@ totals = {
 
 # #### Generate Monthly EP(UK) Renewal Internal Report 
 
-# In[ ]:
+
 
 
 if not quarterly:
@@ -860,7 +860,7 @@ if not quarterly:
 
 # #### Generate Quarterly EP(UK) Status Internal Report
 
-# In[ ]:
+
 
 
 if quarterly:
@@ -914,7 +914,7 @@ if quarterly:
 
 # #### Generate Quarterly EPO Reconciliation File
 
-# In[ ]:
+
 
 
 if quarterly:
@@ -944,7 +944,7 @@ if quarterly:
          notebook_status = False
 
 
-# In[ ]:
+
 
 
 if quarterly:

@@ -1,7 +1,5 @@
 #EPO_Reconciliation
 
-
-
 import logging
 import datetime
 import pyspark
@@ -18,7 +16,7 @@ _logger.setLevel(logging.INFO)
 
 # ### Parameters
 
-# In[2]:
+# In[ ]:
 
 
 quarterly = True
@@ -29,13 +27,13 @@ silver_datalake = "" #stuksee3fsbdatmibisilver.dfs.core.windows.net
 date_today = "" #2025-01-03
 
 
-# In[3]:
+# In[ ]:
 
 
 notebook_status = True
 
 
-# In[4]:
+# In[ ]:
 
 
 try:
@@ -46,7 +44,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[5]:
+# In[ ]:
 
 
 try:
@@ -70,7 +68,7 @@ except Exception as excp:
 
 # #### Renewal
 
-# In[6]:
+# In[ ]:
 
 
 def get_new_renewals_dataframe():
@@ -119,7 +117,7 @@ def get_legacy_renewals_dataframe():
 
 # #### Restoration
 
-# In[7]:
+# In[ ]:
 
 
 def get_legacy_restored_dataframe():
@@ -160,7 +158,7 @@ def get_new_restored_dataframe():
 
 # #### Licence of Right
 
-# In[8]:
+# In[ ]:
 
 
 def get_legacy_lor_dataframe():
@@ -226,7 +224,7 @@ def get_new_lor_dataframe():
 
 # ### Lapse of Right
 
-# In[9]:
+# In[ ]:
 
 
 def get_legacy_lapsed_dataframe():
@@ -275,7 +273,7 @@ def get_new_lapsed_dataframe():
 
 # ### Functions
 
-# In[10]:
+# In[ ]:
 
 
 @f.udf(returnType=ArrayType(StringType()))
@@ -600,7 +598,7 @@ def process_epo_output(data_df, record_type, filter_condition=None, epo_renewal_
 
 # ### Data Processing
 
-# In[11]:
+# In[ ]:
 
 
 try:
@@ -630,7 +628,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[12]:
+# In[ ]:
 
 
 try:
@@ -655,7 +653,7 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[13]:
+# In[ ]:
 
 
 _logger.info(f"Combining renewal, restoration and licence of right data.")
@@ -672,14 +670,14 @@ except Exception as excp:
   notebook_status = False
 
 
-# In[14]:
+# In[ ]:
 
 
 _logger.info(f"Determining due date when renewal was paid.")
 renewals_df = calculate_renewal_due_dates(renewals_df)
 
 
-# In[15]:
+# In[ ]:
 
 
 _logger.info(f"Determining renewals with Licence of Right endorsement.")
@@ -691,7 +689,7 @@ renewals_df = renewals_df.withColumn("lor_endorsement", f.when(
     ).otherwise(f.lit("NO"))).drop("A", "D")
 
 
-# In[16]:
+# In[ ]:
 
 
 _logger.info(f"Determining the first and last renewal years endorsed by Licence of Right.")
@@ -743,18 +741,6 @@ combined_lor_df = combined_lor_df.filter(
 )
 
 
-# In[17]:
-
-
-_logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
-filtered_renewals_df = (
-    calculate_renewal_fee_splits(
-        filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
-    )
-    .drop("late_fee", "late_months")
-)
-
-
 # In[ ]:
 
 
@@ -774,33 +760,46 @@ try:
     )
     filtered_lor_count = filtered_lor_df.count()
     _logger.info(f"{filtered_lor_count} licence of rights.")
-    
-    renewals_with_date_diff = renewals_df.filter(
-        f.month(f.col("date_filed")) != f.month(f.col("date_processed"))
-    )
-    date_diff_count = renewals_with_date_diff.count()
-    _logger.info(f"{date_diff_count} renewals have filing and processing dates in different months")
 
+    # Filter by date_processed instead of date_filed to match when fees are received
     filtered_renewals_df = renewals_df.filter( 
         (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
     _logger.info(f"{filtered_renewals_count} renewals.")
+    
+    # Log renewals where filing and processing dates are in different months
+    cross_month_renewals = filtered_renewals_df.filter(
+        f.date_format(f.col("date_filed"), "yyyy-MM") != f.date_format(f.col("date_processed"), "yyyy-MM")
+    )
+    cross_month_count = cross_month_renewals.count()
+    if cross_month_count > 0:
+        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
+    
+    _logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
+    filtered_renewals_df = (
+        calculate_renewal_fee_splits(
+            filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
+        )
+        .drop("late_fee", "late_months")
+    )
+    
 except Exception as excp:
     _logger.error(f"Unable to filter inputs according to specified date ranges: {excp}.")
     notebook_status = False
 
-try:
-    legacy_lapse_df = get_legacy_lapsed_dataframe().withColumn("source", f.lit("Legacy"))
-    new_lapse_df = get_new_lapsed_dataframe().withColumn("source", f.lit("Dynamics"))
 
-    combined_lapsed_df = legacy_lapse_df.union(new_lapse_df).dropDuplicates()
-    combined_lapsed_count = combined_lapsed_df.count()
-    _logger.info(f"{combined_lapsed_count} lapsed rights.")
-except Exception as excp:
-    _logger.error(f"Error retrieving lapsed data: {excp}.")
-    notebook_status = False
+# In[ ]:
+
+
+_logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
+filtered_renewals_df = (
+    calculate_renewal_fee_splits(
+        filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
+    )
+    .drop("late_fee", "late_months")
+)
 
 
 # ### Output Generation

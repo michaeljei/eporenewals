@@ -1,0 +1,798 @@
+Target,,,,,,,,,,,,,Transformation,Source,,,,,,,,Table Type,Fact / Dimension / Reference
+Database,Table Name,Table Type,Column Name,Friendly Name,Data Type,SCD Type,Attribute Type Type,Purpose,Description,PII,Nullable,Visible,,Source System,Database,Table Name,Column Name,Data Type,Table Type,Description,,Attribute Type,Column / Measure (Column based) / Calculated (row based)
+InfoCentre8x8,vwinteractions,Fact,AbandonTimestamp,,datetime2(7),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AbandonTimestamp,datetime2(7),,,,Purpose,FK / PK / Flag
+InfoCentre8x8,vwinteractions,Fact,AcceptTimestamp,,datetime2(7),,Column,,time agent accepted,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AcceptTimestamp,datetime2(7),,time agent accepted,,Transformation,Pseudo Code / DAX / SQL
+InfoCentre8x8,vwinteractions,Fact,AgentAbandonTimestamp,,datetime2(7),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AgentAbandonTimestamp,datetime2(7),,,,Source System,TM10 / None (if model derived) / multiple fields (1 to many)
+InfoCentre8x8,vwinteractions,Fact,AgentId,,varchar(8000),,Column,,Not currently brought over but would be useful for our relationships,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AgentId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,AgentName,,varchar(8000),,Column,,support members name and id,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AgentName,varchar(8000),,support members name and id,,,
+InfoCentre8x8,vwinteractions,Fact,CallId,,varchar(67),,Calculated,FK,Custom unique identifier,N,N,Y,"SELECT DISTINCT CONCAT(EventId, '|', TotalTime,'|',ProcessTime, '|', cast(CreatedDate AS DATE)) Id",Silver Data Lake,infocentre_ldb,Interaction,"Eventid
+TotalTime
+ProcessTime
+CreatedDate","string
+string
+string
+string",,Custom unique identifier,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg1AnswerTime,,bit,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg1AnswerTime,bit,,,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg1PostDialDelay,,bit,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg1PostDialDelay,bit,,,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg1SipId,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg1SipId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg2AnswerTime,,smallint,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg2AnswerTime,smallint,,,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg2PostDialDelay,,smallint,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg2PostDialDelay,smallint,,,,,
+InfoCentre8x8,vwinteractions,Fact,CallLeg2SipId,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CallLeg2SipId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,CampaignName,,varchar(8000),,Column,,name of the campaign,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CampaignName,varchar(8000),,name of the campaign,,,
+InfoCentre8x8,vwinteractions,Fact,CaseAndFollowupId,,varchar(8000),,Column,,unique case id,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CaseAndFollowupId,varchar(8000),,unique case id,,,
+InfoCentre8x8,vwinteractions,Fact,ChannelObjId,,bigint,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,ChannelObjId,bigint,,,,,
+InfoCentre8x8,vwinteractions,Fact,ConferenceFrom,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,ConferenceFrom,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,ContactedBeforeCase,,int,,Calculated,,contacted about query before?,N,Y,Y,"CASE   
+    WHEN CA.[ContactedBeforeCase] IS NULL THEN 0
+        ELSE CA.[ContactedBeforeCase]
+            END AS [ContactedBeforeCase]",Silver Data Lake,infocentre_ldb,case,ContactedBeforeCase,bit,,contacted about query before?,,,
+InfoCentre8x8,vwinteractions,Fact,CreatedDate,,datetime2(7),,Column,,creation date,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,vwinteractions,Fact,CustomerId,,int,,Column,,customer's unique id,Y,N,Y,[AccountNum] AS [CustomerId],Silver Data Lake,infocentre_ldb,customers,AccountNum,int,,customer's unique id,,,
+InfoCentre8x8,vwinteractions,Fact,CustomerName,,varchar(8000),,Column,,customer's full name,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,CustomerName,varchar(8000),,customer's full name,,,
+InfoCentre8x8,vwinteractions,Fact,CustomerType,,varchar(8000),,Calculated,,type of customer,N,Y,Y,"CASE WHEN [CustomerType] = '(Please select)' THEN NULL
+    ELSE [CustomerType] END AS [CustomerType]",Silver Data Lake,infocentre_ldb,customers,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,vwinteractions,Fact,DestinationTranslated,,bigint,,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,DestinationTranslated,bigint,,,,,
+InfoCentre8x8,vwinteractions,Fact,DialCode,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,DialCode,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,DialText,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,DialText,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,DispositionCode,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,DispositionCode,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,Email,,varchar(8000),,Column,,Agent's email address,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customersupportteam,Email,varchar(8000),,Agent's emal address,,,
+InfoCentre8x8,vwinteractions,Fact,EventId,,int,,Column,,unique interaction id,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,EventId,int,,unique interaction id,,,
+InfoCentre8x8,vwinteractions,Fact,ExtTransData,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,ExtTransData,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,HoldCount,,smallint,,Column,,times the customer was put on-hold,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,HoldCount,smallint,,times the customer was put on-hold,,,
+InfoCentre8x8,vwinteractions,Fact,InboundSipId,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,InboundSipId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,InteractionCompleted,,bit,,Column,,states if the interaction is ongoing ,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,InteractionCompleted,bit,,states if the interaction is ongoing ,,,
+InfoCentre8x8,vwinteractions,Fact,InteractionDirection,,varchar(8000),,Column,,was activity sent or received,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,InteractionDirection,varchar(8000),,was activity sent or received,,,
+InfoCentre8x8,vwinteractions,Fact,InteractionType,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,InteractionType,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,IVRTreatmentTime,,smallint,,Column,,how long IVR used ,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,IVRTreatmentTime,smallint,,how long IVR used ,,,
+InfoCentre8x8,vwinteractions,Fact,MaxHoldTime,,smallint,,Column,,time customer was on-hold,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,MaxHoldTime,smallint,,time customer was on-hold,,,
+InfoCentre8x8,vwinteractions,Fact,MediaType,,varchar(8000),,Column,,contact method,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,MediaType,varchar(8000),,contact method,,,
+InfoCentre8x8,vwinteractions,Fact,NewPermission,,int,,Calculated,Flag,permission given within the last month,N,N,Y,"CASE WHEN C.[PermissionGiven] = 'Yes'
+        AND MONTH(CAST(C.[PermissionGivenDate] as date)) = MONTH(GETDATE())-1
+        THEN 1
+        ELSE 0
+            END AS [NewPermission]",Silver Data Lake,infocentre_ldb,customers,"PermissionGiven
+PermissionGivenDate","varchar(8000)
+date",,"permission given
+customer gave or declined permission",,,
+InfoCentre8x8,vwinteractions,Fact,Notes,,varchar(8000),,Column,,further information,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,Notes,varchar(8000),,further information,,,
+InfoCentre8x8,vwinteractions,Fact,OrigInteractionId,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,OrigInteractionId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,PermissionGiven,,varchar(8000),,Column,,permission given,N,Y,Y,"CASE WHEN [PermissionGiven] = 'Please select' THEN NULL
+    ELSE [PermissionGiven] END AS [PermissionGiven]",Silver Data Lake,infocentre_ldb,customers,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwinteractions,Fact,PermissionGivenDate,,date,,Column,,customer gave or declined permission,N,Y,Y,CAST([PermissionGivenDate] as date) AS PermissionGivenDate,Silver Data Lake,infocentre_ldb,customers,PermissionGivenDate,date,,customer gave or declined permission,,,
+InfoCentre8x8,vwinteractions,Fact,PostProcessTime,,smallint,,Column,,post process time taken,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,PostProcessTime,smallint,,post process time taken,,,
+InfoCentre8x8,vwinteractions,Fact,ProcessTime,,smallint,,Column,,time taken to process,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,ProcessTime,smallint,,time taken to process,,,
+InfoCentre8x8,vwinteractions,Fact,QueueName,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,QueueName,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,RecordId,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,RecordId,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,RecordStatus,,varchar(8000),,Column,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,RecordStatus,varchar(8000),,,,,
+InfoCentre8x8,vwinteractions,Fact,SearchedIPOBefore,,varchar(3),,Calculated,Flag,has customer searched IPO before contacting,N,Y,Y,"CASE 
+    WHEN TA.[SearchedIPOBefore] IS NULL THEN 'No' 
+    WHEN TA.[SearchedIPOBefore] = 'Please select' THEN 'No' 
+    WHEN TA.[SearchedIPOBefore] = 'No' THEN 'No' 
+    WHEN TA.[SearchedIPOBefore] = 'Yes' THEN 'Yes'
+        END AS [SearchedIPOBefore]",Silver Data Lake,infocentre_ldb,task,SearchedIPOBefore,varchar(8000),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwinteractions,Fact,Team,,varchar(8000),,Column,,Agent's Team,N,Y,Y,The Team an Agent belongs to,Silver Data Lake,infocentre_ldb,customersupportteam,Team,varchar(8000),,The Team an Agent belongs to,,,
+InfoCentre8x8,vwinteractions,Fact,TimetoAbandon,,int,,Calculated,,Time in seconds between creation and abandoning a call,N,Y,Y,"DATEDIFF(SECOND,I.[CreatedDate],I.[AbandonTimestamp]) AS TimetoAbandon",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AbandonTimestamp","datetime2(7)
+datetime2(7)",,creation date,,,
+InfoCentre8x8,vwinteractions,Fact,TotalHoldTime,,smallint,,Column,,total on-hold time,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,TotalHoldTime,smallint,,total on-hold time,,,
+InfoCentre8x8,vwinteractions,Fact,TotalTime,,smallint,,Column,,process and post process time,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,TotalTime,smallint,,process and post process time,,,
+InfoCentre8x8,vwinteractions,Fact,TransactionId,,varchar(8000),,Column,,unique transaction id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,Transactionid,varchar(8000),,unique interaction id,,,
+InfoCentre8x8,vwinteractions,Fact,TransferFrom,,varchar(8000),,Column,,where was call transferd from,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,TransferFrom,varchar(8000),,where was call transferd from,,,
+InfoCentre8x8,vwinteractions,Fact,TransIdPrevIssue,,int,,Calculated,Flag,,N,N,Y,"CASE WHEN A.[TransactionId] NOT IN ('81.1210', '81.1830', '124.2900', '124.2940', '141.2220', '141.2260', '142.2280', '142.2320', '221.4850', '221.4890') THEN 1 ELSE 0 END",Silver Data Lake,infocentre_ldb,activities,Transactionid,varchar(8000),,unique interaction id,,,
+InfoCentre8x8,vwinteractions,Fact,VoiceMessageLeft,,varchar(8000),,Column,,did customer leave a voice message,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,VoiceMessageLeft,varchar(8000),,did customer leave a voice message,,,
+InfoCentre8x8,vwinteractions,Fact,Wrong IVR Selection,,varchar(3),,Calculated,Flag,"Flag indicting that the customer selected the wrong option during the IVR selection
+",N,Y,Y,"CASE WHEN [ItemMenuText] = 'Wrong IP Right Selected in IVR' AND ([Name] LIKE '%Service%' or [Name] LIKE 'Other%') THEN 'Yes' ELSE 'No'
+      END AS [Wrong IVR Selection]",Silver Data Lake,infocentre_ldb,transactions,"ItemMenuText
+Name","varchar(8000)
+varchar(8000)",,transaction code stream,,,
+InfoCentre8x8,infocentreraw_calls,,Abandoned,,int(),,Calculated,,Time in seconds between creation and abandoning a call,N,Y,Y,"DATEDIFF(SECOND, CAST(i.CreatedDate AS time), CAST(i.AbandonTimestamp AS time)) Abandoned",Dimensional Model,InfoCentre8x8,vwinteractions,"CreatedDate
+AbandonTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and abandoning a call,,,
+InfoCentre8x8,infocentreraw_calls,,Accepted,,int(),,Calculated,,Time in seconds between creation and accepting a call,N,Y,Y,"DATEDIFF(SECOND, CAST(i.CreatedDate AS time), CAST(i.AcceptTimestamp AS time)) Accepted",Dimensional Model,InfoCentre8x8,vwinteractions,"CreatedDate
+AcceptTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and accepting a call,,,
+InfoCentre8x8,infocentreraw_calls,,AcceptTimestamp,,datetime2(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,AcceptTimestamp,datetime2(7),,,,,
+InfoCentre8x8,infocentreraw_calls,,AgentName,,varchar(8000),,,,Name of the Agent,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,AgentName,varchar(8000),,Name of the Agent,,,
+InfoCentre8x8,infocentreraw_calls,,AssistedDigital,,varchar(8000),,,,,N,Y,Y,,,InfoCentre8x8,vwcustomers,AssistedDigital,varchar(8000),,,,,
+InfoCentre8x8,infocentreraw_calls,,CallId,,varchar(67),,Calculated,,Custom unique identifier,N,N,Y,"CONCAT(i.EventId, '|', i.TotalTime,'|',i.ProcessTime, '|', cast(i.CreatedDate as date)) CallId",Dimensional Model,InfoCentre8x8,vwinteractions,"Eventid
+TotalTime
+ProcessTime
+CreatedDate","string
+string
+string
+string",,Custom unique identifier,,,
+InfoCentre8x8,infocentreraw_calls,,Company,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,Company,varchar(8000),,,,,
+InfoCentre8x8,infocentreraw_calls,,ContactedBeforeCase,,int(),,,,contacted about query before?,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,ContactedBeforeCase,int,,contacted about query before?,,,
+InfoCentre8x8,infocentreraw_calls,,CreatedDate,,datetime2(),,,,creation date,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,infocentreraw_calls,,CustomerId,,int(),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,CustomerId,int(),,customer's unique id,,,
+InfoCentre8x8,infocentreraw_calls,,CustomerName,,varchar(8000),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,CustomerName,varchar(8000),,"customer's first name
+customer's last name",,,
+InfoCentre8x8,infocentreraw_calls,,CustomerType,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,infocentreraw_calls,,Email,,varchar(8000),,,,Customer's Email,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,Email,varchar(8000),,Customer's Email,,,
+InfoCentre8x8,infocentreraw_calls,,EventId,,int(),,,,unique interaction id,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,EventId,int(),,unique interaction id,,,
+InfoCentre8x8,infocentreraw_calls,,InteractionDirection,,varchar(8000),,,,was activity sent or received,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,InteractionDirection,varchar(8000),,was activity sent or received,,,
+InfoCentre8x8,infocentreraw_calls,,ItemMenuText,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwtransactions,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,infocentreraw_calls,,IVRTreatmentTime,,smallint(),,,,how long IVR used ,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,IVRTreatmentTime,smallint,,how long IVR used ,,,
+InfoCentre8x8,infocentreraw_calls,,MonthYear,,varchar(25),,,,,N,N,Y,"CONCAT(MONTH(CAST(i.CreatedDate AS DATE)),' ',YEAR(CAST(i.CreatedDate AS DATE))) [MonthYear]",Dimensional Model,InfoCentre8x8,vwinteractions,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,infocentreraw_calls,,Name,,varchar(8000),,,,transaction code stream,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwtransactions,Name,varchar(8000),,transaction code stream,,,
+InfoCentre8x8,infocentreraw_calls,,NewPermission,,varchar(1),,,Flag,customer gave or declined permission,N,N,Y,"CASE WHEN CAST(i.CreatedDate AS DATE) = CAST(c.PermissionGivenDate AS DATE)
+	AND c.PermissionGiven = 'Yes'
+		THEN '1'
+		ELSE '0'
+			END NewPermission --date of permission the same as the date of phone call ",Dimensional Model,InfoCentre8x8,"vwinteractions
+vwcustomers
+vwcustomers","CreatedDate
+PermissionGivenDate
+PermissionGiven","datetime2(7)
+date
+varchar(8000)",,"creation date
+customer gave or declined permission
+permission given",,,
+InfoCentre8x8,infocentreraw_calls,,Notes,,varchar(8000),,,,further information,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,Notes,varchar(8000),,further information,,,
+InfoCentre8x8,infocentreraw_calls,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,infocentreraw_calls,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,PermissionGivenDate,date,,customer gave or declined permission,,,
+InfoCentre8x8,infocentreraw_calls,,Phone,,bigint(),,,,customer's phone number,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwcustomers,Phone,string,,customer's phone number,,,
+InfoCentre8x8,infocentreraw_calls,,PostProcessTime,,smallint(),,,,post process time taken,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,PostProcessTime,smallint,,post process time taken,,,
+InfoCentre8x8,infocentreraw_calls,,ProcessTime,,smallint(),,,,time taken to process,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,ProcessTime,smallint,,time taken to process,,,
+InfoCentre8x8,infocentreraw_calls,,QueueName,,varchar(8000),,,,,N,Y,Y,"CASE WHEN AcceptTimestamp IS NOT NULL
+	AND IVRTreatmentTime = 0
+		THEN 'Voicemail'
+			ELSE i.QueueName
+				END QueueName",Dimensional Model,InfoCentre8x8,vwinteractions,"AcceptTimestamp
+IVRTreatmentTime
+QueueName","datetime2(7)
+smallint
+varchar(8000)",,"time the call was accepted
+how long IVR used ",,,
+InfoCentre8x8,infocentreraw_calls,,SearchedIPOBefore,,varchar(3),,,,has customer searched IPO before contacting,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,SearchedIPOBefore,varchar(3),,has customer searched IPO before contacting,,,
+InfoCentre8x8,infocentreraw_calls,,TotalHoldTime,,smallint(),,,,total on-hold time,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,TotalHoldTime,smallint,,total on-hold time,,,
+InfoCentre8x8,infocentreraw_calls,,TotalTime,,smallint(),,,,process and post process time,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwinteractions,TotalTime,smallint,,process and post process time,,,
+InfoCentre8x8,infocentreraw_calls,,TransactionId,,varchar(8000),,,,unique interaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',N,Y,Y,"SELECT DISTINCT TransactionId
+		FROM vwTransactions t
+
+		WHERE t.TransactionId NOT IN ('81.1210', '81.1830', '124.2900', '124.2940', '141.2220', '141.2260', '142.2280', '142.2320', '221.4850', '221.4890')	---transactiONIDs for unavoidable contact
+		AND t.Name LIKE '%query%'",Dimensional Model,InfoCentre8x8,vwtransactions,"Transactionid
+Name","varchar(8000)
+varchar(8000)",,unique interaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',,,
+InfoCentre8x8,vvLastRefreshDate,,LastRefreshDateTime,,datetime(),,,,Date the data was last refreshed,N,N,Y,GETDATE(),,,,,,,,,,
+InfoCentre8x8,vwActivities,,AgentId,,varchar(-1),,,,support staff unique id,Y,Y,Y,,Silver Data Lake,infocentre_ldb,activities,AgentId,varchar(8000),,support staff unique id,,,
+InfoCentre8x8,vwActivities,,AgentName,,varchar(-1),,,,name of the support staff,Y,Y,Y,,Silver Data Lake,infocentre_ldb,activities,AgentName,varchar(8000),,name of the support staff,,,
+InfoCentre8x8,vwActivities,,CaseAndFollowupId,,varchar(-1),,,,unique case id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,CaseAndFollowupId,varchar(8000),,unique case id,,,
+InfoCentre8x8,vwActivities,,ChannelId,,smallint(),,,,channel id customer used,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,ChannelId,smallint(),,channel id customer used,,,
+InfoCentre8x8,vwActivities,,ChannelObjId,,varchar(-1),,,,channel name customer used,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,ChannelObjId,varchar(8000),,channel name customer used,,,
+InfoCentre8x8,vwActivities,,EventId,,int(),,,,unique interaction id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,EventId,int(),,unique interaction id,,,
+InfoCentre8x8,vwActivities,,GroupId,,smallint(),,,,e.g. group of advisors,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,GroupId,smallint(),,e.g. group of advisors,,,
+InfoCentre8x8,vwActivities,,GroupName,,varchar(-1),,,,name of the group,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,GroupName,varchar(8000),,name of the group,,,
+InfoCentre8x8,vwActivities,,ID,,bigint(),,,,unique transaction id,N,Y,Y,ROW_NUMBER() OVER(ORDER BY [TransactionId]),Silver Data Lake,infocentre_ldb,activities,TransactionId,varchar(8000),,unique transaction id,,,
+InfoCentre8x8,vwActivities,,MediaType,,varchar(-1),,,,type of contact,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,MediaType,varchar(8000),,type of contact,,,
+InfoCentre8x8,vwActivities,,PostTransProcTime,,smallint(),,,,post transaction process time,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,PostTransProcTime,smallint(),,post transaction process time,,,
+InfoCentre8x8,vwActivities,,QueueName,,varchar(-1),,,,name of queue,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,QueueName,varchar(8000),,name of queue,,,
+InfoCentre8x8,vwActivities,,QueueObjId,,varchar(-1),,,,information regarding queue name and queue id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,QueueObjId,varchar(8000),,information regarding queue name and queue id,,,
+InfoCentre8x8,vwActivities,,RecordingFilename,,varchar(-1),,,,recorded voice chat,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,RecordingFilename,varchar(8000),,recorded voice chat,,,
+InfoCentre8x8,vwActivities,,TclItemId,,smallint(),,,,transaction code item id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TclItemId,smallint(),,transaction code item id,,,
+InfoCentre8x8,vwActivities,,TclListId,,smallint(),,,,transaction code list id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TclListId,smallint(),,transaction code list id,,,
+InfoCentre8x8,vwActivities,,TransAcceptTime,,datetime2(),,,,time the transaction was accepted,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransAcceptTime,datetime2(),,time the transaction was accepted,,,
+InfoCentre8x8,vwActivities,,TransactionId,,varchar(-1),,,,unique transaction id,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransactionId,varchar(8000),,unique transaction id,,,
+InfoCentre8x8,vwActivities,,TransConferenceFrom,,varchar(-1),,,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransConferenceFrom,varchar(8000),,,,,
+InfoCentre8x8,vwActivities,,TransProcTime,,smallint(),,,,transaction process time,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransProcTime,smallint(),,transaction process time,,,
+InfoCentre8x8,vwActivities,,TransRecNum,,int(),,,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransRecNum,int(),,,,,
+InfoCentre8x8,vwActivities,,TransTotalTime,,smallint(),,,,time to complete transaction,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransTotalTime,smallint(),,time to complete transaction,,,
+InfoCentre8x8,vwActivities,,TransTransferFrom,,varchar(-1),,,,where was transaction transferred from,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,TransTransferFrom,varchar(8000),,where was transaction transferred from,,,
+InfoCentre8x8,vwAdvisor,,AgentId,,varchar(-1),,,,support staff unique id,Y,Y,Y,,Silver Data Lake,infocentre_ldb,activities,AgentId,varchar(8000),,support staff unique id,,,
+InfoCentre8x8,vwAdvisor,,AgentName,,varchar(-1),,,,name of the support staff,Y,Y,Y,,Silver Data Lake,infocentre_ldb,activities,AgentName,varchar(8000),,name of the support staff,,,
+InfoCentre8x8,vwAdvisor,,GroupId,,smallint(),,,,e.g. group of advisors,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,GroupId,smallint(),,e.g. group of advisors,,,
+InfoCentre8x8,vwAdvisor,,GroupName,,varchar(-1),,,,name of the group,N,Y,Y,,Silver Data Lake,infocentre_ldb,activities,GroupName,varchar(8000),,name of the group,,,
+InfoCentre8x8,vwCallAnsweredWithinDurationRange,,Description,,varchar(-1),,,Reference,Description of call answered within duration range,N,Y,Y,,Silver Data Lake,infocentre_ldb,callansweredwithindurationrange,Description,varchar(8000),,Description of call answered within duration range,,,
+InfoCentre8x8,vwCallAnsweredWithinDurationRange,,OrderId,,int(),,,Reference,Field to indicate the ordering or the ranges for the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,callansweredwithindurationrange,OrderId,int(),,Field to indicate the ordering or the ranges for the UI,,,
+InfoCentre8x8,vwCallDurationRange,,Description,,varchar(-1),,,Reference,Description of call duration range,N,Y,Y,,Silver Data Lake,infocentre_ldb,calldurationrange,Description,varchar(8000),,Description of call duration range,,,
+InfoCentre8x8,vwCallDurationRange,,OrderId,,int(),,,Reference,Field to indicate the ordering or the ranges for the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,calldurationrange,OrderId,int(),,Field to indicate the ordering or the ranges for the UI,,,
+InfoCentre8x8,vwCallIds,,CallId,,varchar(67),,,,Custom unique identifier,,N,,"CONCAT([EventId],'|',[TotalTime],'|',[ProcessTime],'|',CAST([CreatedDate] as DATE))",Silver Data Lake,infocentre_ldb,Interaction,"Eventid
+TotalTime
+ProcessTime
+CreatedDate","string
+string
+string
+string",,Custom unique identifier,,,
+InfoCentre8x8,vwCases,,AccountNum,,int(),,,,unique id for the customer,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Case,AccountNum,int(),,unique id for the customer,,,
+InfoCentre8x8,vwCases,,ApplicationNumberCase,,varchar(8000),,,,application number,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,ApplicationNumberCase,varchar(8000),,application number,,,
+InfoCentre8x8,vwCases,,AssignedDate,,datetime2(),,,,date the case was assigned,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,AssignedDate,datetime2(),,date the case was assigned,,,
+InfoCentre8x8,vwCases,,AssignedTo,,varchar(8000),,,,unique id of support member,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Case,AssignedTo,varchar(8000),,unique id of support member,,,
+InfoCentre8x8,vwCases,,Attachments,,bit(),,,,number of email attachments,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Attachments,bit(),,number of email attachments,,,
+InfoCentre8x8,vwCases,,Casefield1,,bit(),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Casefield1,bit(),,future proofing,,,
+InfoCentre8x8,vwCases,,Casefield2,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Casefield2,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwCases,,Casefield3,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Casefield3,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwCases,,CaseId,,smallint(),,,,unique case Id,N,Y,Y,[CaseId] IS NOT NULL,Silver Data Lake,infocentre_ldb,Case,CaseId,varchar(8000),,unique case Id,,,
+InfoCentre8x8,vwCases,,Category,,varchar(8000),,,,category of case,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Category,varchar(8000),,category of case,,,
+InfoCentre8x8,vwCases,,ClosedBy,,varchar(8000),,,,unique id of support member,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,ClosedBy,varchar(8000),,unique id of support member,,,
+InfoCentre8x8,vwCases,,ClosedDate,,datetime2(),,,,date the case was closed,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,ClosedDate,datetime2(),,date the case was closed,,,
+InfoCentre8x8,vwCases,,ContactedBeforeCase,,int(),,,,contacted about query before?,N,Y,Y,"CASE   
+        WHEN [ContactedBeforeCase] IS NULL THEN 0
+        ELSE [ContactedBeforeCase]
+            END AS [ContactedBeforeCase]",Silver Data Lake,infocentre_ldb,Case,ContactedBeforeCase,bit(),,contacted about query before?,,,
+InfoCentre8x8,vwCases,,CreatedBy,,varchar(8000),,,,who created the case,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Case,CreatedBy,varchar(8000),,who created the case,,,
+InfoCentre8x8,vwCases,,CreatedDate,,datetime2(),,,,date the case was created,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,CreatedDate,datetime2(),,date the case was created,,,
+InfoCentre8x8,vwCases,,LastActiveDate,,datetime2(),,,,date of last case activity,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,LastActiveDate,datetime2(),,date of last case activity,,,
+InfoCentre8x8,vwCases,,MediaType,,varchar(8000),,,,how the customer contacted support,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,MediaType,varchar(8000),,how the customer contacted support,,,
+InfoCentre8x8,vwCases,,MentionedEUIPO,,bit(),,,,has customer mentioned EU IPO,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,MentionedEUIPO,bit(),,has customer mentioned EU IPO,,,
+InfoCentre8x8,vwCases,,Priority,,varchar(8000),,,,measure of urgency,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Priority,varchar(8000),,measure of urgency,,,
+InfoCentre8x8,vwCases,,Project,,varchar(8000),,,,project of case,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Project,varchar(8000),,project of case,,,
+InfoCentre8x8,vwCases,,SearchedIPOBefore,,bit(),,,,has customer searched IPO before contacting,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,SearchedIPOBefore,bit(),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwCases,,Severity,,varchar(8000),,,,measure of severity,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Severity,varchar(8000),,measure of severity,,,
+InfoCentre8x8,vwCases,,Status,,varchar(8000),,,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Status,varchar(8000),,,,,
+InfoCentre8x8,vwCases,,Subject,,varchar(8000),,,,subject of case,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Subject,varchar(8000),,subject of case,,,
+InfoCentre8x8,vwCases,,Visibility,,varchar(8000),,,,visibility of the email,N,Y,Y,,Silver Data Lake,infocentre_ldb,Case,Visibility,varchar(8000),,visibility of the email,,,
+InfoCentre8x8,vwCustomerHoldDurationRange,,Description,,varchar(-1),,,Reference,Description of customer hold duration range,N,Y,Y,,Silver Data Lake,infocentre_ldb,customerholddurationrange,Description,varchar(8000),,Description of customer hold duration range,,,
+InfoCentre8x8,vwCustomerHoldDurationRange,,OrderId,,int(),,,Reference,Field to indicate the ordering or the ranges for the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,customerholddurationrange,OrderId,int(),,Field to indicate the ordering or the ranges for the UI,,,
+InfoCentre8x8,vwCustomers,,AltCity,,varchar(8000),,,,alternative city,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltCity,varchar(8000),,alternative city,,,
+InfoCentre8x8,vwCustomers,,AltCountry,,varchar(8000),,,,alternative county,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltCountry,varchar(8000),,alternative county,,,
+InfoCentre8x8,vwCustomers,,AlternativeContact,,varchar(8000),,,,alternative contact point,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AlternativeContact,varchar(8000),,alternative contact point,,,
+InfoCentre8x8,vwCustomers,,AltState,,varchar(8000),,,,alternative state,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltState,varchar(8000),,alternative state,,,
+InfoCentre8x8,vwCustomers,,AltStreet,,varchar(8000),,,,alternative street,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltStreet,varchar(8000),,alternative street,,,
+InfoCentre8x8,vwCustomers,,AltStreet2,,varchar(8000),,,,alternative street 2,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltStreet2,varchar(8000),,alternative street 2,,,
+InfoCentre8x8,vwCustomers,,AltZIP,,varchar(8000),,,,alternative zip code,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AltZIP,varchar(8000),,alternative zip code,,,
+InfoCentre8x8,vwCustomers,,AssistedDigital,,varchar(8000),,,,assisted digital,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,AssistedDigital,varchar(8000),,assisted digital,,,
+InfoCentre8x8,vwCustomers,,City,,varchar(8000),,,,primary city,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,City,varchar(8000),,primary city,,,
+InfoCentre8x8,vwCustomers,,Comments,,varchar(8000),,,,further information,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Comments,varchar(8000),,further information,,,
+InfoCentre8x8,vwCustomers,,Company,,varchar(8000),,,,customer's company name,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Company,varchar(8000),,customer's company name,,,
+InfoCentre8x8,vwCustomers,,Country,,varchar(8000),,,,primary county,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Country,varchar(8000),,primary county,,,
+InfoCentre8x8,vwCustomers,,Customerfield1,,bit(),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Customerfield1,bit(),,future proofing,,,
+InfoCentre8x8,vwCustomers,,Customerfield2,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Customerfield2,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwCustomers,,Customerfield3,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Customerfield3,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwCustomers,,CustomerId,,int(),,,,customer's unique id,N,Y,Y,[AccountNum] IS NOT NULL,Silver Data Lake,infocentre_ldb,customers,AccountNum,int(),,customer's unique id,,,
+InfoCentre8x8,vwCustomers,,CustomerName,,varchar(8000),,,,customer's first and last name,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customers,CustomerName,varchar(8000),,"customer's first name
+customer's last name",,,
+InfoCentre8x8,vwCustomers,,CustomerType,,varchar(8000),,,,type of customer,N,Y,Y,"CASE WHEN [CustomerType] = '(Please select)' THEN NULL
+		ELSE [CustomerType] END AS [CustomerType]",Silver Data Lake,infocentre_ldb,customers,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,vwCustomers,,Email,,varchar(8000),,,,customer's email,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Email,varchar(8000),,customer's email,,,
+InfoCentre8x8,vwCustomers,,Fax,,varchar(8000),,,,customer's FAX,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Fax,varchar(8000),,customer's FAX,,,
+InfoCentre8x8,vwCustomers,,FrequentCaller,,bit(),,,,does the customer call up often,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,FrequentCaller,bit(),,does the customer call up often,,,
+InfoCentre8x8,vwCustomers,,LinkedCustomer,,int(),,,Flag,A flag to indicate that the customer type is known,N,Y,Y,"CASE WHEN [CustomerType] <> '(Please select)'
+        OR [CustomerType] = ('Unknown') 
+        THEN 1
+        ELSE 0
+            END AS [LinkedCustomer]",Silver Data Lake,infocentre_ldb,customers,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,vwCustomers,,Password,,varchar(8000),,,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Password,varchar(8000),,,,,
+InfoCentre8x8,vwCustomers,,PBX,,varchar(8000),,,,private branch exchange,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,PBX,varchar(8000),,private branch exchange,,,
+InfoCentre8x8,vwCustomers,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,"CASE WHEN [PermissionGiven] = 'Please select' THEN NULL
+        ELSE [PermissionGiven] END AS [PermissionGiven]",Silver Data Lake,infocentre_ldb,customers,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwCustomers,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,CAST([PermissionGivenDate] as date) AS [PermissionGivenDate],Silver Data Lake,infocentre_ldb,customers,PermissionGivenDate,date(),,customer gave or declined permission,,,
+InfoCentre8x8,vwCustomers,,Phone,,bigint(),,,,customer's phone number,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Phone,bigint(),,customer's phone number,,,
+InfoCentre8x8,vwCustomers,,State,,varchar(8000),,,,primary state,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,State,varchar(8000),,primary state,,,
+InfoCentre8x8,vwCustomers,,Street,,varchar(8000),,,,primary street,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Street,varchar(8000),,primary street,,,
+InfoCentre8x8,vwCustomers,,Street2,,varchar(8000),,,,primary street 2,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,Street2,varchar(8000),,primary street 2,,,
+InfoCentre8x8,vwCustomers,,ZIP,,varchar(8000),,,,primary zip code,N,Y,Y,,Silver Data Lake,infocentre_ldb,customers,ZIP,varchar(8000),,primary zip code,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Access,,varchar(8000),,,Reference,The level of access an Agent has to the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,customersupportteam,Access,varchar(8000),,The level of access an Agent has to the UI,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Agent_Id,,varchar(8000),,,Reference,The unique identifier of the Agent,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customersupportteam,Agent_Id,varchar(8000),,The unique identifier of the Agent,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Agent_Name,,varchar(8000),,,Reference,The Agent's first and last name,Y,Y,Y,,Silver Data Lake,infocentre_ldb,customersupportteam,Agent_Name,varchar(8000),,The Agent's first and last name,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Email,,varchar(8000),,,Reference,The Agent's email address,Y,Y,Y,[Email] IS NOT NULL,Silver Data Lake,infocentre_ldb,customersupportteam,Email,varchar(8000),,The Agent's email address,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Role,,varchar(8000),,,Reference,The Agent's role,N,Y,Y,,Silver Data Lake,infocentre_ldb,customersupportteam,Role,varchar(8000),,The Agent's role,,,
+InfoCentre8x8,vwCustomerSupportTeam,,Team,,varchar(8000),,,Reference,The Team an Agent belongs to,N,Y,Y,CASE WHEN [Team] = 'Leaver' THEN 'Other' ELSE [Team] END AS [Team],Silver Data Lake,infocentre_ldb,customersupportteam,Team,varchar(8000),,The Team an Agent belongs to,,,
+InfoCentre8x8,vwDate,,Date,,date(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,DateKey,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,DayOfMonth,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,DayOfWeekNameLong,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,DayOfWeekNameShort,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,DayOfWeekOrder,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,FinancialYear,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,FinancialYearMonth,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,FinancialYearMonthOrder,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,FinancialYearName,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,FinancialYearQuarter,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,IsHoliday,,bit(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,ISOWeek,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,IsWeekDay,,bit(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,IsWorkDay,,bit(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,MonthNameLong,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,MonthNameShort,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,MonthOrder,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,MonthYear,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,QuarterName,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,QuarterOrder,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,QuarterYear,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,Week,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,Year,,int(),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwDate,,YYYYMM,,varchar(8000),,,Reference - Common,,N,Y,Y,,Silver Data Lake,ref_ldb,dimdate,,,,,,,
+InfoCentre8x8,vwFollowups,,ApplicationNumberCase,,varchar(-1),,,,application number,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,ApplicationNumberCase,varchar(8000),,application number,,,
+InfoCentre8x8,vwFollowups,,Attachments,,bit(),,,,number of email attachments,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Attachments,bit(),,number of email attachments,,,
+InfoCentre8x8,vwFollowups,,CaseAndFollowupId,,varchar(-1),,,,unique case and followup id,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,CaseAndFollowupId,varchar(8000),,"unique case id
+unique followup id",,,
+InfoCentre8x8,vwFollowups,,Casefield1,,bit(),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Casefield1,bit(),,future proofing,,,
+InfoCentre8x8,vwFollowups,,Casefield2,,varchar(-1),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Casefield2,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwFollowups,,Casefield3,,varchar(-1),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Casefield3,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwFollowups,,CaseId,,smallint(),,,,unique case Id,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,CaseId,smallint(),,unique case Id,,,
+InfoCentre8x8,vwFollowups,,Category,,varchar(-1),,,,category,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Category,varchar(8000),,category,,,
+InfoCentre8x8,vwFollowups,,ContactedBeforeCase,,varchar(-1),,,,contacted about this before?,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,ContactedBeforeCase,varchar(8000),,contacted about this before?,,,
+InfoCentre8x8,vwFollowups,,CreatedDate,,datetime2(),,,,date the case was created,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,CreatedDate,datetime2(),,date the case was created,,,
+InfoCentre8x8,vwFollowups,,FollowupId,,smallint(),,,,unique followup id,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,FollowupId,smallint(),,unique followup id,,,
+InfoCentre8x8,vwFollowups,,FollowupNo,,smallint(),,,,followup order number,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,FollowupNo,smallint(),,followup order number,,,
+InfoCentre8x8,vwFollowups,,MediaType,,varchar(-1),,,,how the customer contacted support,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,MediaType,varchar(8000),,how the customer contacted support,,,
+InfoCentre8x8,vwFollowups,,MentionedEUIPO,,varchar(-1),,,,has customer mentioned EU IPO,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,MentionedEUIPO,varchar(8000),,has customer mentioned EU IPO,,,
+InfoCentre8x8,vwFollowups,,Priority,,varchar(-1),,,,measure of urgency,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Priority,varchar(8000),,measure of urgency,,,
+InfoCentre8x8,vwFollowups,,Project,,varchar(-1),,,,project,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Project,varchar(8000),,project,,,
+InfoCentre8x8,vwFollowups,,SearchedIPOBefore,,varchar(-1),,,,has customer searched IPO before contacting,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,SearchedIPOBefore,varchar(8000),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwFollowups,,Severity,,varchar(-1),,,,severity,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Severity,varchar(8000),,severity,,,
+InfoCentre8x8,vwFollowups,,Status,,varchar(-1),,,,,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Status,varchar(8000),,,,,
+InfoCentre8x8,vwFollowups,,Subject,,varchar(-1),,,,subject of case,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Subject,varchar(8000),,subject of case,,,
+InfoCentre8x8,vwFollowups,,Visibility,,varchar(-1),,,,visibility of the email,N,Y,Y,,Silver Data Lake,infocentre_ldb,followups,Visibility,varchar(8000),,visibility of the email,,,
+InfoCentre8x8,vwHoldCountRange,,Description,,varchar(8000),,,Reference,Description of the hold count range,N,Y,Y,,Silver Data Lake,infocentre_ldb,holdcountrange,Description,varchar(8000),,Description of the hold count range,,,
+InfoCentre8x8,vwHoldCountRange,,OrderId,,int(),,,Reference,Field to indicate the ordering or the ranges for the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,holdcountrange,OrderId,int(),,Field to indicate the ordering or the ranges for the UI,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Abandoned,,int(),,,,Time in seconds between creation and abandoning a call exclduing when a call has been abandoned during IVR,N,Y,Y,"DATEDIFF(SECOND, cast(CreatedDate as time), cast(AbandonTimestamp as time)) Abandoned
+
+CASE WHEN IVRTreatmentTime = 0 AND Abandoned > 0
+	THEN 0
+	ELSE Abandoned
+		END Abandoned",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AbandonTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and abandoning a call exclduing when a call has been abandoned during IVR,,,
+InfoCentre8x8,vwInfoCentre_Calls,,AC,,int(),,,,The largest value of the unique transaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',N,Y,Y,"CASE WHEN ac.TransactionId IS NOT NULL
+	THEN 1
+	ELSE 0
+		END AC
+
+max(AC) AC",Silver Data Lake,infocentre_ldb,transactions,"Transactionid
+Name","varchar(8000)
+varchar(8000)",,Unique transaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',,,
+InfoCentre8x8,vwInfoCentre_Calls,,Accepted,,int(),,Calculated,,Time in seconds between creation and accepting a call,N,Y,Y,"DATEDIFF(SECOND, cast(CreatedDate as time), cast(AcceptTimestamp as time)) Accepted",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and accepting a call,,,
+InfoCentre8x8,vwInfoCentre_Calls,,AccountNum,,int(),,,,The largest value of the customer's unique id,N,Y,Y,max(AccountNum),Silver Data Lake,infocentre_ldb,customers,AccountNum,int(),,customer's unique id,,,
+InfoCentre8x8,vwInfoCentre_Calls,,AgentName,,varchar(8000),,,,Support members name and id,Y,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,AgentName,varchar(8000),,support members name and id,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Answered_YN,,varchar(1),,,Flag,"Flag to indicate whether or not a call has been answered
+",N,N,Y,"CASE WHEN Accepted > 0
+	THEN 'Y'
+	ELSE 'N'
+		END [Answered_YN]",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and accepting a call,,,
+InfoCentre8x8,vwInfoCentre_Calls,,AvoidableContact,,int(),,,Flag,"A flag, using the largest value,  to indicate that the customer has communicated with IPO previously and that this contact could potentially have been avoided",N,Y,Y,"CASE WHEN SearchedIPOBefore = 0 AND ContactedBefore = 0  AND AC = 0
+	THEN 0
+	ELSE 1
+		END AvoidableContact
+
+max(AvoidableContact)",Silver Data Lake,infocentre_ldb,"task
+
+case
+
+transactions","SearchedIPOBefore
+
+ContactedBeforeCase
+
+Transactionid
+Name","varchar(8000)
+
+bit
+
+varchar(8000)
+varchar(8000)",,"has customer searched IPO before contacting
+
+contacted about query before?
+
+Unique transaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact'",,,
+InfoCentre8x8,vwInfoCentre_Calls,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,"CONCAT(EventId, '|', TotalTime,'|',ProcessTime, '|', cast(CreatedDate as date))",Silver Data Lake,infocentre_ldb,Interaction,"Eventid
+TotalTime
+ProcessTime
+CreatedDate","string
+string
+string
+string",,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentre_Calls,,ContactedBefore,,int(),,,Flag,A flag to indicate that a customer has contacted IPO about query before,N,Y,Y,"CASE WHEN ContactedBefore = 'Yes'
+	THEN 1
+	ELSE 0
+		END ContactedBefore",Silver Data Lake,infocentre_ldb,case,ContactedBeforeCase,bit,,contacted about query before?,,,
+InfoCentre8x8,vwInfoCentre_Calls,,CreatedDate,,date(),,,,Date part of Creation Date,N,Y,Y,cast(CreatedDate as date),Silver Data Lake,infocentre_ldb,Interaction,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,vwInfoCentre_Calls,,CreatedTime,,time(),,,,Time part of Creation Date,N,Y,Y,cast(CreatedDate as time),Silver Data Lake,infocentre_ldb,Interaction,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,vwInfoCentre_Calls,,EventId,,int(),,,,Unique interaction id,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,EventId,int,,unique interaction id,,,
+InfoCentre8x8,vwInfoCentre_Calls,,InteractionDirection,,varchar(8000),,,,was activity sent or received,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,InteractionDirection,varchar(8000),,was activity sent or received,,,
+InfoCentre8x8,vwInfoCentre_Calls,,IVRTreatmentTime,,int(),,,,How long a customer spends in IVR excluding calls that have been abandoned during IVR,N,Y,Y,"CASE WHEN IVRTreatmentTime = 0
+	AND Abandoned > 0
+	THEN Abandoned
+	ELSE IVRTreatmentTime
+		END IVRTreatmentTime   ---- this sorts out calls abandoned during the IVR",Silver Data Lake,infocentre_ldb,Interaction,"IVRTreatmentTime
+
+CreatedDate
+AbandonTimestamp","smallint
+
+datetime2(7)
+datetime2(7)",,"How long IVR used 
+
+Time in seconds between creation and abandoning a call exclduing when a call has been abandoned during IVR
+",,,
+InfoCentre8x8,vwInfoCentre_Calls,,NewPermission,,int(),,,Flag,A flag to indicate that a customer has given or declined permission,N,N,Y,"CASE WHEN cast(CreatedDate as date) = cast(PermissionGivenDate as date)
+	AND PermissionGiven = 'Yes'
+		THEN 1
+		ELSE 0
+			END NewPermission	--- date of permission the same as the date of phone call",Silver Data Lake,infocentre_ldb,customers,"PermissionGiven
+PermissionGivenDate","varchar(8000)
+date",,"permission given
+customer gave or declined permission",,,
+InfoCentre8x8,vwInfoCentre_Calls,,Notes,,varchar(8000),,,,further information,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,Notes,varchar(8000),,further information,,,
+InfoCentre8x8,vwInfoCentre_Calls,,PostProcessTime,,smallint(),,,,post process time taken,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,PostProcessTime,smallint,,post process time taken,,,
+InfoCentre8x8,vwInfoCentre_Calls,,ProcessTime,,smallint(),,,,time taken to process,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,ProcessTime,smallint,,time taken to process,,,
+InfoCentre8x8,vwInfoCentre_Calls,,QueueName,,varchar(8000),,,,The queuename a customer has selected,N,Y,Y,"CASE WHEN AcceptTimestamp IS NOT NULL
+	AND IVRTreatmentTime = 0 
+		THEN 'Voicemail'
+		ELSE i.QueueName
+			END QueueName",Silver Data Lake,infocentre_ldb,Interaction,"QueueName
+AcceptTimestamp
+IVRTreatmentTime","varchar(8000)
+datetime2(7)
+smallint",,The queuename a customer has selected,,,
+InfoCentre8x8,vwInfoCentre_Calls,,SearchedIPOBefore,,int(),,,Flag,A flag to indicate that a customer searched IPO before contacting on this occasion,N,Y,Y,"CASE WHEN SearchedIPOBefore = 'Yes'
+	THEN 1
+	ELSE 0
+		END SearchedIPOBefore",Silver Data Lake,infocentre_ldb,task,SearchedIPOBefore,varchar(8000),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Target,,int(),,,,Field to identify which calls have been accepted or abandoned within 20 seconds,N,Y,Y,"CASE WHEN Accepted <= 20
+		THEN 1
+	WHEN Accepted > 20
+		THEN 2 
+	WHEN Abandoned < 20
+	AND Abandoned > 0
+		THEN 3
+	WHEN Abandoned >= 20
+		THEN 4
+	WHEN (Abandoned = 0 OR Abandoned IS NULL)
+	AND IVRTreatmentTime >= 0
+	AND Accepted IS NULL
+		THEN 5
+			END [Target]
+
+CASE WHEN ([Target] IN ('3', '4')
+		AND QueueName = ' ')
+			THEN 5
+			ELSE [Target]
+				END [Target] --- this correct the change that happened to the IVR on 9/7/21",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp
+AbandonTimestamp
+IVRTreatmentTime
+QueueName","datetime2(7)
+datetime2(7)
+datetime2(7)
+smallint
+varchar(8000)",,Field to identify which calls have been accepted or abandoned within 20 seconds,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Target2,,int(),,,,Field to identify which calls have been accepted or abandoned within 60 seconds,N,Y,Y,"CASE WHEN Accepted <= 60
+		THEN 1
+	WHEN Accepted > 60
+		THEN 2 
+	WHEN Abandoned < 60
+	AND Abandoned > 0
+		THEN 3
+	WHEN Abandoned >= 60
+		THEN 4
+	WHEN (Abandoned = 0 OR Abandoned IS NULL)
+	AND IVRTreatmentTime >= 0 
+	AND Accepted IS NULL
+		THEN 5
+			END [Target2]
+
+CASE WHEN ([Target2] IN ('3', '4')
+		AND QueueName = ' ')
+			THEN 5
+			ELSE [Target2]
+				END [Target2]",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp
+AbandonTimestamp
+IVRTreatmentTime
+QueueName","datetime2(7)
+datetime2(7)
+datetime2(7)
+smallint
+varchar(8000)",,Field to identify which calls have been accepted or abandoned within 60 seconds,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Target3,,int(),,,,Field to identify which calls have been accepted or abandoned within 120 seconds,N,Y,Y,"CASE WHEN Accepted <= 120
+		THEN 1
+	WHEN Accepted > 120
+		THEN 2 
+	WHEN Abandoned < 120
+	AND Abandoned > 0
+		THEN 3
+	WHEN Abandoned >= 120
+		THEN 4
+	WHEN (Abandoned = 0 or Abandoned IS NULL)
+	AND IVRTreatmentTime >= 0
+	AND Accepted IS NULL
+		THEN 5
+			END [Target3]",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp
+AbandonTimestamp
+IVRTreatmentTime
+","datetime2(7)
+datetime2(7)
+datetime2(7)
+smallint
+",,Field to identify which calls have been accepted or abandoned within 120 seconds,,,
+InfoCentre8x8,vwInfoCentre_Calls,,Target4,,int(),,,,Field to identify which calls have been accepted or abandoned within 300 seconds,N,Y,Y,"CASE WHEN Accepted <= 300
+		THEN 1
+	WHEN Accepted > 300
+		THEN 2 
+	WHEN Abandoned < 300
+	AND Abandoned > 0
+		THEN 3
+	WHEN Abandoned >= 300
+		THEN 4
+	WHEN (Abandoned = 0 or Abandoned IS NULL)
+	AND IVRTreatmentTime >= 0
+	AND accepted IS NULL
+		THEN 5
+			END [Target4]",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp
+AbandonTimestamp
+IVRTreatmentTime
+","datetime2(7)
+datetime2(7)
+datetime2(7)
+smallint
+",,Field to identify which calls have been accepted or abandoned within 300 seconds,,,
+InfoCentre8x8,vwInfoCentre_Calls,,TotalHoldTime,,smallint(),,,,total on-hold time,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,TotalHoldTime,smallint,,total on-hold time,,,
+InfoCentre8x8,vwInfoCentre_Calls,,TotalTime,,smallint(),,,,process and post process time,N,Y,Y,,Silver Data Lake,infocentre_ldb,Interaction,TotalTime,smallint,,process and post process time,,,
+InfoCentre8x8,vwInfoCentre_Customers,,AssistedDigital,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,AssistedDigital,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_Customers,,Company,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Company,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_Customers,,CustomerId,,int(),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerId,int(),,,,,
+InfoCentre8x8,vwInfoCentre_Customers,,CustomerName,,varchar(8000),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerName,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_Customers,,CustomerType,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerType,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_Customers,,Email,,varchar(8000),,,,Customer's Email,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Email,varchar(8000),,Customer's Email,,,
+InfoCentre8x8,vwInfoCentre_Customers,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwInfoCentre_Customers,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGivenDate,date(),,customer gave or declined permission,,,
+InfoCentre8x8,vwInfoCentre_Customers,,PG,,int(),,,Flag,Flag to indicate that premission has been given,N,N,Y,PermissionGiven = 'Yes' then 1 else 0 end PG,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwInfoCentre_Customers,,Phone,,bigint(),,,,customer's phone number,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Phone,bigint(),,customer's phone number,,,
+InfoCentre8x8,vwInfoCentre_ItemMenuText,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,,Dimensional Model,InfoCentre8x8,vwInfoCentreRaw_CallsV2,Callid,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentre_ItemMenuText,,Service_Subject,,varchar(8000),,,,,N,Y,Y,"CASE WHEN c.[Name] LIKE '%Service%'
+	OR c.[Name] LIKE 'Other%'
+	THEN [ItemMenuText]
+		END Service_Subject",Dimensional Model,InfoCentre8x8,vwInfoCentreRaw_CallsV2,"Name
+ItemMenuText","varchar(8000)
+varchar(8000)",,,,,
+InfoCentre8x8,vwInfoCentre_ItemMenuText,,StageInJourney,,varchar(8000),,,,,N,Y,Y,"CASE WHEN c.[Name] LIKE '%journey%'
+	THEN [ItemMenuText]
+		END StageInJourney",Dimensional Model,InfoCentre8x8,vwInfoCentreRaw_CallsV2,"Name
+ItemMenuText","varchar(8000)
+varchar(8000)",,,,,
+InfoCentre8x8,vwInfoCentre_ItemMenuText,,TypeOfQuery,,varchar(8000),,,,,N,Y,Y,"CASE WHEN c.[Name] LIKE '%Query%'
+	THEN [ItemMenuText]
+		END TypeOfQuery",Dimensional Model,InfoCentre8x8,vwInfoCentreRaw_CallsV2,"Name
+ItemMenuText","varchar(8000)
+varchar(8000)",,,,,
+InfoCentre8x8,vwInfoCentre_ServiceSubject,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,"Table filtered: WHERE [Name] LIKE '%Service%'
+OR [Name] LIKE 'Other%'",Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentre_ServiceSubject,,Service_Subject,,varchar(8000),,,,,N,Y,Y,"Table filtered: WHERE [Name] LIKE '%Service%'
+OR [Name] LIKE 'Other%'",Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_StageInJourney,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,Table filtered: WHERE [Name] like '%journey%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentre_StageInJourney,,StageInJourney,,varchar(8000),,,,,N,Y,Y,Table filtered: WHERE [Name] like '%journey%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentre_TypeOfQuery,,CallId,,varchar(67),,,,,N,N,Y,Table filtered: WHERE [Name] LIKE '%Query%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentre_TypeOfQuery,,TypeOfQuery,,varchar(8000),,,,,N,Y,Y,Table filtered: WHERE [Name] LIKE '%Query%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Abandoned,,int(),,Calculated,,Time in seconds between creation and abandoning a call exclduing when a call has been abandoned during IVR,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+DATEDIFF(SECOND, cast(CreatedDate as time), cast(AbandonTimestamp as time)) Abandoned
+
+CASE WHEN IVRTreatmentTime = 0 AND Abandoned > 0
+	THEN 0
+	ELSE Abandoned
+		END Abandoned",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AbandonTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and abandoning a call exclduing when a call has been abandoned during IVR,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Accepted,,int(),,Calculated,,Time in seconds between creation and accepting a call,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+DATEDIFF(SECOND, cast(CreatedDate as time), cast(AcceptTimestamp as time)) Accepted",Silver Data Lake,infocentre_ldb,Interaction,"CreatedDate
+AcceptTimestamp","datetime2(7)
+datetime2(7)",,Time in seconds between creation and accepting a call,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,AcceptTimestamp,,datetime2(),,,,Time a call was accepted,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,AcceptTimestamp,datetime2(7),,Time a call was accepted,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,AgentName,,varchar(8000),,,,Support members name and id,Y,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,AgentName,varchar(8000),,support members name and id,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,AssistedDigital,,varchar(8000),,,,assisted digital,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,customers,AssistedDigital,varchar(8000),,assisted digital,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CONCAT(EventId, '|', TotalTime,'|',ProcessTime, '|', cast(CreatedDate as date))",Silver Data Lake,infocentre_ldb,Interaction,"Eventid
+TotalTime
+ProcessTime
+CreatedDate","string
+string
+string
+string",,Custom unique identifier,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Company,,varchar(8000),,,,customer's company name,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,customers,Company,varchar(8000),,customer's company name,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,ContactedBeforeCase,,int(),,,,contacted about query before?,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CASE   
+        WHEN [ContactedBeforeCase] IS NULL THEN 0
+        ELSE [ContactedBeforeCase]
+            END AS [ContactedBeforeCase]",Silver Data Lake,infocentre_ldb,Case,ContactedBeforeCase,bit(),,contacted about query before?,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,CreatedDate,,datetime2(),,,,creation date,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,CreatedDate,datetime2(7),,,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,CustomerId,,int(),,,,customer's unique id,Y,N,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+[AccountNum] AS [CustomerId]",Silver Data Lake,infocentre_ldb,customers,AccountNum,int,,customer's unique id,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,CustomerName,,varchar(8000),,,,customer's full name,Y,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,CustomerName,varchar(8000),,customer's full name,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,CustomerType,,varchar(8000),,,,type of customer,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,customers,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Email,,varchar(8000),,,,customer's email,Y,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,customers,Email,varchar(8000),,customer's email,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,EventId,,int(),,,,Unique interaction id,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,EventId,int,,unique interaction id,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,InteractionDirection,,varchar(8000),,,,was activity sent or received,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,InteractionDirection,varchar(8000),,was activity sent or received,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,ItemMenuText,,varchar(8000),,,,,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,transactions,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,IVRTreatmentTime,,smallint(),,,,how long IVR used ,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,IVRTreatmentTime,smallint,,how long IVR used ,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,MonthYear,,varchar(25),,,,,N,N,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CONCAT(MONTH(CAST(i.CreatedDate AS DATE)),' ',YEAR(CAST(i.CreatedDate AS DATE))) [MonthYear]",Silver Data Lake,infocentre_ldb,Interaction,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Name,,varchar(8000),,,,transaction code stream,Y,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Dimensional Model,InfoCentre8x8,vwtransactions,Name,varchar(8000),,transaction code stream,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,NewPermission,,varchar(1),,,,A flag to indicate that a customer has given or declined permission,N,N,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CASE WHEN cast(CreatedDate as date) = cast(PermissionGivenDate as date)
+	AND PermissionGiven = 'Yes'
+		THEN 1
+		ELSE 0
+			END NewPermission	--- date of permission the same as the date of phone call",Silver Data Lake,infocentre_ldb,"Interactions
+customers","CreatedDate
+PermissionGivenDate
+PermissionGiven","datetime2(7)
+date
+varchar(8000)",,"creation date
+customer gave or declined permission
+permission given",,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Notes,,varchar(8000),,,,further information,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,Notes,varchar(8000),,further information,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CASE WHEN [PermissionGiven] = 'Please select' THEN NULL
+    ELSE [PermissionGiven] END AS [PermissionGiven]",Silver Data Lake,infocentre_ldb,customers,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CAST([PermissionGivenDate] as date) AS PermissionGivenDate",Silver Data Lake,infocentre_ldb,customers,PermissionGivenDate,date,,customer gave or declined permission,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,Phone,,bigint(),,,,customer's phone number,Y,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,customers,Phone,bigint(),,customer's phone number,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,PostProcessTime,,smallint(),,,,post process time taken,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,PostProcessTime,smallint,,post process time taken,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,ProcessTime,,smallint(),,,,time taken to process,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,ProcessTime,smallint,,time taken to process,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,QueueName,,varchar(8000),,,,The queuename a customer has selected,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CASE WHEN AcceptTimestamp IS NOT NULL
+	AND IVRTreatmentTime = 0 
+		THEN 'Voicemail'
+		ELSE i.QueueName
+			END QueueName",Silver Data Lake,infocentre_ldb,Interaction,"QueueName
+AcceptTimestamp
+IVRTreatmentTime","varchar(8000)
+datetime2(7)
+smallint",,The queuename a customer has selected,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,SearchedIPOBefore,,varchar(3),,,Flag,has customer searched IPO before contacting,N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+CASE 
+    WHEN s.[SearchedIPOBefore] IS NULL THEN 'No' 
+    WHEN s.[SearchedIPOBefore] = 'Please select' THEN 'No' 
+    WHEN s.[SearchedIPOBefore] = 'No' THEN 'No' 
+    WHEN s.[SearchedIPOBefore] = 'Yes' THEN 'Yes'
+        END AS [SearchedIPOBefore]",Silver Data Lake,infocentre_ldb,task,SearchedIPOBefore,varchar(8000),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,TotalHoldTime,,smallint(),,,,total on-hold time,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,TotalHoldTime,smallint,,total on-hold time,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,TotalTime,,smallint(),,,,process and post process time,N,Y,Y,Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone',Silver Data Lake,infocentre_ldb,Interaction,TotalTime,smallint,,process and post process time,,,
+InfoCentre8x8,vwInfoCentreRaw_CallsV2,,TransactionId,,varchar(8000),,,,unique interaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',N,Y,Y,"Table filtered: WHERE [infoCentre_ldb].[dbo].[Interaction].MediaType = 'Phone'
+
+SELECT DISTINCT TransactionId
+		FROM vwTransactions t
+
+		WHERE t.TransactionId NOT IN ('81.1210', '81.1830', '124.2900', '124.2940', '141.2220', '141.2260', '142.2280', '142.2320', '221.4850', '221.4890')	---transactiONIDs for unavoidable contact
+		AND t.Name LIKE '%query%'",Silver Data Lake,infocentre_ldb,transactions,"Transactionid
+Name","varchar(8000)
+varchar(8000)",,unique interaction id where the transaction code stream contains the word 'query' and excluding those which indicate 'unavoidable contact',,,
+InfoCentre8x8,vwInteractionsAnonymised,,AbandonTimestamp,,datetime2(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,AbandonTimestamp,datetime2(7),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,AcceptTimestamp,,datetime2(),,,,time agent accepted,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,AcceptTimestamp,datetime2(7),,time agent accepted,,,
+InfoCentre8x8,vwInteractionsAnonymised,,AgentAbandonTimestamp,,datetime2(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,AgentAbandonTimestamp,datetime2(7),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg1AnswerTime,,bit(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg1AnswerTime,bit,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg1PostDialDelay,,bit(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg1PostDialDelay,bit,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg1SipId,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg1SipId,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg2AnswerTime,,smallint(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg2AnswerTime,smallint,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg2PostDialDelay,,smallint(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg2PostDialDelay,smallint,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CallLeg2SipId,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CallLeg2SipId,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CampaignName,,varchar(8000),,,,name of the campaign,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CampaignName,varchar(8000),,name of the campaign,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CaseAndFollowupId,,varchar(8000),,,,unique case id,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CaseAndFollowupId,varchar(8000),,unique case id,,,
+InfoCentre8x8,vwInteractionsAnonymised,,ChannelObjId,,bigint(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,ChannelObjId,bigint,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,ConferenceFrom,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,ConferenceFrom,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,ContactedBeforeCase,,int(),,,,contacted about query before?,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,ContactedBeforeCase,int,,contacted about query before?,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CreatedDate,,datetime2(),,,,creation date,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CreatedDate,datetime2(7),,creation date,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CustomerName,,varchar(8000),,,,customer's full name,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CustomerName,varchar(8000),,customer's full name,,,
+InfoCentre8x8,vwInteractionsAnonymised,,CustomerType,,varchar(8000),,,,type of customer,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,CustomerType,varchar(8000),,type of customer,,,
+InfoCentre8x8,vwInteractionsAnonymised,,DestinationTranslated,,bigint(),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,DestinationTranslated,bigint,,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,DialCode,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,DialCode,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,DialText,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,DialText,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,DispositionCode,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,DispositionCode,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,Email,,varchar(8000),,,,Agent's email address,Y,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,Email,varchar(8000),,Agent's email address,,,
+InfoCentre8x8,vwInteractionsAnonymised,,EventId,,int(),,,,unique interaction id,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,EventId,int,,unique interaction id,,,
+InfoCentre8x8,vwInteractionsAnonymised,,ExtTransData,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,ExtTransData,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,HoldCount,,smallint(),,,,times the customer was put on-hold,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,HoldCount,smallint,,times the customer was put on-hold,,,
+InfoCentre8x8,vwInteractionsAnonymised,,InboundSipId,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,InboundSipId,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,InteractionCompleted,,bit(),,,,states if the interaction is ongoing ,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,InteractionCompleted,bit,,states if the interaction is ongoing ,,,
+InfoCentre8x8,vwInteractionsAnonymised,,InteractionDirection,,varchar(8000),,,,was activity sent or received,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,InteractionDirection,varchar(8000),,was activity sent or received,,,
+InfoCentre8x8,vwInteractionsAnonymised,,InteractionType,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,InteractionType,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,IVRTreatmentTime,,smallint(),,,,how long IVR used ,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,IVRTreatmentTime,smallint,,how long IVR used ,,,
+InfoCentre8x8,vwInteractionsAnonymised,,MaxHoldTime,,smallint(),,,,time customer was on-hold,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,MaxHoldTime,smallint,,time customer was on-hold,,,
+InfoCentre8x8,vwInteractionsAnonymised,,MediaType,,varchar(8000),,,,contact method,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,MediaType,varchar(8000),,contact method,,,
+InfoCentre8x8,vwInteractionsAnonymised,,Notes,,varchar(8000),,,,further information,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,Notes,varchar(8000),,further information,,,
+InfoCentre8x8,vwInteractionsAnonymised,,OrigInteractionId,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,OrigInteractionId,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwInteractionsAnonymised,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,PermissionGivenDate,date,,customer gave or declined permission,,,
+InfoCentre8x8,vwInteractionsAnonymised,,PostProcessTime,,smallint(),,,,post process time taken,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,PostProcessTime,smallint,,post process time taken,,,
+InfoCentre8x8,vwInteractionsAnonymised,,ProcessTime,,smallint(),,,,time taken to process,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,ProcessTime,smallint,,time taken to process,,,
+InfoCentre8x8,vwInteractionsAnonymised,,QueueName,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,QueueName,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,RecordId,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,RecordId,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,RecordStatus,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,RecordStatus,varchar(8000),,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,SearchedIPOBefore,,varchar(3),,Calculated,Flag,has customer searched IPO before contacting,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,SearchedIPOBefore,varchar(3),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwInteractionsAnonymised,,Team,,varchar(8000),,,,Agent's Team,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,Team,varchar(8000),,Agent's Team,,,
+InfoCentre8x8,vwInteractionsAnonymised,,TotalHoldTime,,smallint(),,,,total on-hold time,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,TotalHoldTime,smallint,,total on-hold time,,,
+InfoCentre8x8,vwInteractionsAnonymised,,TotalTime,,smallint(),,,,process and post process time,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,TotalTime,smallint,,process and post process time,,,
+InfoCentre8x8,vwInteractionsAnonymised,,TransactionId,,varchar(8000),,,,unique transaction id,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,TransactionId,varchar(8000),,unique transaction id,,,
+InfoCentre8x8,vwInteractionsAnonymised,,TransferFrom,,varchar(8000),,,,where was call transferd from,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,TransferFrom,,varchar(8000),where was call transferd from,,,
+InfoCentre8x8,vwInteractionsAnonymised,,TransIdPrevIssue,,int(),,,,,N,N,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,TransIdPrevIssue,,int,,,,
+InfoCentre8x8,vwInteractionsAnonymised,,VoiceMessageLeft,,varchar(8000),,,,did customer leave a voice message,N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,VoiceMessageLeft,,varchar(8000),did customer leave a voice message,,,
+InfoCentre8x8,vwInteractionsAnonymised,,Wrong IVR Selection,,varchar(3),,,,"Flag indicting that the customer selected the wrong option during the IVR selection
+",N,Y,Y,,Dimensional Model,InfoCentre8x8,vwInteractions,Wrong IVR Selection,,varchar(3),"Flag indicting that the customer selected the wrong option during the IVR selection
+",,,
+InfoCentre8x8,vwPostProcessDurationRange,,Description,,varchar(-1),,,Reference,Description of the Post Process Duration range,N,Y,Y,,Silver Data Lake,infocentre_ldb,postprocessdurationrange,Description,varchar(8000),,Description of the Post Process Duration range,,,
+InfoCentre8x8,vwPostProcessDurationRange,,OrderId,,int(),,,Reference,Field to indicate the ordering or the ranges for the UI,N,Y,Y,,Silver Data Lake,infocentre_ldb,postprocessdurationrange,OrderId,int(),,Field to indicate the ordering or the ranges for the UI,,,
+InfoCentre8x8,vwServiceSubject,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,"Table filtered: WHERE [Name] LIKE '%Service%'
+OR [Name] LIKE 'Other%'",Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwServiceSubject,,ServiceSubject,,varchar(8000),,,,,N,Y,Y,"Table filtered: WHERE [Name] LIKE '%Service%'
+OR [Name] LIKE 'Other%'",Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwStageInJourney,,CallId,,varchar(67),,,,Custom unique identifier,N,N,Y,Table filtered: WHERE [Name] like '%journey%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwStageInJourney,,ServiceSubject,,varchar(8000),,,,,N,Y,Y,Table filtered: WHERE [Name] like '%journey%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwTasks,,AccountNum,,int(),,,,unique id for the customer,Y,Y,Y,,Silver Data Lake,infocentre_ldb,task,AccountNum,int(),,unique id for the customer,,,
+InfoCentre8x8,vwTasks,,ApplicationNumberTask,,varchar(8000),,,,application number,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,ApplicationNumberTask,varchar(8000),,application number,,,
+InfoCentre8x8,vwTasks,,AssignedTo,,varchar(8000),,,,unique id of support member,Y,Y,Y,,Silver Data Lake,infocentre_ldb,task,AssignedTo,varchar(8000),,unique id of support member,,,
+InfoCentre8x8,vwTasks,,CallDuration,,smallint(),,,,duration of the call ,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,CallDuration,smallint(),,duration of the call ,,,
+InfoCentre8x8,vwTasks,,CallType,,varchar(8000),,,,did customer contact support or vice versa,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,CallType,varchar(8000),,did customer contact support or vice versa,,,
+InfoCentre8x8,vwTasks,,CampaignName,,varchar(8000),,,,name of the campaign,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,CampaignName,varchar(8000),,name of the campaign,,,
+InfoCentre8x8,vwTasks,,ContactedBefore,,varchar(8000),,,,contacted about query before?,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,ContactedBefore,varchar(8000),,contacted about query before?,,,
+InfoCentre8x8,vwTasks,,CreatedBy,,varchar(8000),,,,unique id of support member,Y,Y,Y,,Silver Data Lake,infocentre_ldb,task,CreatedBy,varchar(8000),,unique id of support member,,,
+InfoCentre8x8,vwTasks,,CreationDate,,datetime2(),,,,date and time of task creation,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,CreationDate,datetime2(),,date and time of task creation,,,
+InfoCentre8x8,vwTasks,,DueDate,,datetime2(),,,,last whole minute before CREATEDDATE field. NOT USED.,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,DueDate,datetime2(),,last whole minute before CREATEDDATE field. NOT USED.,,,
+InfoCentre8x8,vwTasks,,EventId,,int(),,,,unique transaction Id,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,EventId,int(),,unique transaction Id,,,
+InfoCentre8x8,vwTasks,,LastActivityDate,,datetime2(),,,,date the task was last modified,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,LastActivityDate,datetime2(),,date the task was last modified,,,
+InfoCentre8x8,vwTasks,,MentionedEUIPO,,varchar(8000),,,,has customer mentioned EU IPO,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,MentionedEUIPO,varchar(8000),,has customer mentioned EU IPO,,,
+InfoCentre8x8,vwTasks,,Reminder,,bit(),,,,"defaults to ""N"". NOT USED.",N,Y,Y,,Silver Data Lake,infocentre_ldb,task,Reminder,bit(),,"defaults to ""N"". NOT USED.",,,
+InfoCentre8x8,vwTasks,,SearchedIPOBefore,,varchar(3),,,Flag,has customer searched IPO before contacting,N,Y,Y,"CASE 
+        WHEN [SearchedIPOBefore] IS NULL THEN 'No' 
+        WHEN [SearchedIPOBefore] = 'Please select' THEN 'No' 
+        WHEN [SearchedIPOBefore] = 'No' THEN 'No' 
+        WHEN [SearchedIPOBefore] = 'Yes' THEN 'Yes' END
+            AS [SearchedIPOBefore]",Silver Data Lake,infocentre_ldb,task,SearchedIPOBefore,varchar(8000),,has customer searched IPO before contacting,,,
+InfoCentre8x8,vwTasks,,Subject,,varchar(8000),,,,subject of task,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,Subject,varchar(8000),,subject of task,,,
+InfoCentre8x8,vwTasks,,Taskfield1,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,Taskfield1,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwTasks,,Taskfield2,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,Taskfield2,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwTasks,,Taskfield3,,varchar(8000),,,,future proofing,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,Taskfield3,varchar(8000),,future proofing,,,
+InfoCentre8x8,vwTasks,,TaskId,,int(),,,,unique Id for tasks,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,TaskId,int(),,unique Id for tasks,,,
+InfoCentre8x8,vwTasks,,TaskStatus,,varchar(8000),,,,is task completed or ongoing,N,Y,Y,,Silver Data Lake,infocentre_ldb,task,TaskStatus,varchar(8000),,is task completed or ongoing,,,
+InfoCentre8x8,vwTime,,HourOfDay,,int(),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTime,,MinuteOfHour,,int(),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTime,,SecondOfMinute,,int(),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTime,,TimeAltKey,,datetime2(),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTime,,TimeKey,,int(),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTime,,TimeString,,varchar(8000),,,Reference - Common,,N,Y,Y,"OPENROWSET(BULK 'https://stuksee3fsbdatmibisilver.blob.core.windows.net/common/common/dimTime/',
+	FORMAT='parquet')",Silver Data Lake,,dimTime,,,Parquet,,,,
+InfoCentre8x8,vwTransactions,,Active,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,Active,bit(),,,,,
+InfoCentre8x8,vwTransactions,,AdminNotes,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,AdminNotes,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,AssignmentType,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,AssignmentType,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,AutoSort,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,AutoSort,bit(),,,,,
+InfoCentre8x8,vwTransactions,,CategoryId,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,CategoryId,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,Description,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,Description,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ItemActive,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemActive,bit(),,,,,
+InfoCentre8x8,vwTransactions,,ItemCallLineId,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemCallLineId,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ItemId,,smallint(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemId,smallint(),,,,,
+InfoCentre8x8,vwTransactions,,ItemMenuText,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemMenutext,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ItemOrdinate,,smallint(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemOrdinate,smallint(),,,,,
+InfoCentre8x8,vwTransactions,,ItemReportText,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemReportText,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ItemShortcodeText,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemShortcodeText,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ItemUsed,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ItemUsed,bit(),,,,,
+InfoCentre8x8,vwTransactions,,LangId,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,LangId,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,ListId,,smallint(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,ListId,smallint(),,one of two unique identifiers for transaction codes,,,
+InfoCentre8x8,vwTransactions,,MultipleChoice,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,MultipleChoice,bit(),,,,,
+InfoCentre8x8,vwTransactions,,Name,,varchar(-1),,,,,Y,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,Name,varchar(8000),,transaction code stream,,,
+InfoCentre8x8,vwTransactions,,Required,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,Required,bit(),,,,,
+InfoCentre8x8,vwTransactions,,RequiredBeforeOutbound,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,RequiredBeforeOutbound,bit(),,,,,
+InfoCentre8x8,vwTransactions,,TransactionId,,varchar(-1),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,TransactionId,varchar(8000),,,,,
+InfoCentre8x8,vwTransactions,,Used,,bit(),,,,,N,Y,Y,Table filtered: WHERE [TransactionId] IS NOT NULL,Silver Data Lake,infocentre_ldb,transactions,Used,bit(),,,,,
+InfoCentre8x8,vwTypeOfQuery,,CallId,,varchar(67),,,,,N,N,Y,Table filtered: WHERE [Name] LIKE '%Query%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,CallId,varchar(67),,Custom unique identifier,,,
+InfoCentre8x8,vwTypeOfQuery,,TypeOfQuery,,varchar(8000),,,,,N,Y,Y,Table filtered: WHERE [Name] LIKE '%Query%',Dimensional Model,InfoCentre8x8,infocentreraw_calls,ItemMenuText,varchar(8000),,,,,
+InfoCentre8x8,vwUR_Permissions,,AssistedDigital,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,AssistedDigital,varchar(8000),,,,,
+InfoCentre8x8,vwUR_Permissions,,Company,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Company,varchar(8000),,,,,
+InfoCentre8x8,vwUR_Permissions,,CustomerId,,int(),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerId,int(),,,,,
+InfoCentre8x8,vwUR_Permissions,,CustomerName,,varchar(8000),,,,,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerName,varchar(8000),,,,,
+InfoCentre8x8,vwUR_Permissions,,CustomerType,,varchar(8000),,,,,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,CustomerType,varchar(8000),,,,,
+InfoCentre8x8,vwUR_Permissions,,Email,,varchar(8000),,,,Customer's Email,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Email,varchar(8000),,Customer's Email,,,
+InfoCentre8x8,vwUR_Permissions,,MonthYear,,varchar(25),,,,,N,N,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,MonthYear,varchar(25),,,,,
+InfoCentre8x8,vwUR_Permissions,,PermissionGiven,,varchar(8000),,,,permission given,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwUR_Permissions,,PermissionGivenDate,,date(),,,,customer gave or declined permission,N,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGivenDate,date(),,customer gave or declined permission,,,
+InfoCentre8x8,vwUR_Permissions,,PG,,int(),,,,Flag to indicate that premission has been given,N,N,Y,PermissionGiven = 'Yes' then 1 else 0 end PG,Dimensional Model,InfoCentre8x8,infocentreraw_calls,PermissionGiven,varchar(8000),,permission given,,,
+InfoCentre8x8,vwUR_Permissions,,Phone,,bigint(),,,,customer's phone number,Y,Y,Y,,Dimensional Model,InfoCentre8x8,infocentreraw_calls,Phone,bigint(),,customer's phone number,,,

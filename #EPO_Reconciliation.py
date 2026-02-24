@@ -790,18 +790,6 @@ except Exception as excp:
     notebook_status = False
 
 
-# In[ ]:
-
-
-_logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
-filtered_renewals_df = (
-    calculate_renewal_fee_splits(
-        filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
-    )
-    .drop("late_fee", "late_months")
-)
-
-
 # ### Output Generation
 
 # In[ ]:

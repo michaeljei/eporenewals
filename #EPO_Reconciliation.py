@@ -631,6 +631,8 @@ except Exception as excp:
 
 
 
+# In[ ]:
+
 try:
     new_renewals_df = get_new_renewals_dataframe().withColumn("late_fee", f.lit(None)).withColumn("late_months", f.lit(None))
     new_renewal_count = new_renewals_df.count()
@@ -640,18 +642,31 @@ try:
     legacy_renewal_count = legacy_renewals_df.count()
     _logger.info(f"{legacy_renewal_count} legacy renewals.")
 
-    _logger.info(f"Deduplicating renewal records present in both systems.")
-    non_duplicates = legacy_renewals_df.join(new_renewals_df, legacy_renewals_df.columns, "leftanti") \
-        .withColumn("source", f.lit("Legacy"))
+    _logger.info(f"Deduplicating renewal records present in both systems - prioritizing OneIPO.")
+    
+    # Track duplicates before deduplication
+    oneipo_keys = new_renewals_df.select("application_num", "publication_num", "renewal_year").distinct()
+    cops_keys = legacy_renewals_df.select("application_num", "publication_num", "renewal_year").distinct()
+    duplicate_count = cops_keys.intersect(oneipo_keys).count()
+    _logger.info(f"{duplicate_count} duplicate renewals found in both systems - keeping OneIPO version.")
+    
+    # Prioritize OneIPO records
     new_renewals_df = new_renewals_df.withColumn("source", f.lit("Dynamics"))
-    renewals_df = non_duplicates.unionByName(new_renewals_df).withColumn("type_identifier", f.lit("Renewals"))
+    non_duplicates = legacy_renewals_df.join(new_renewals_df, ["application_num", "publication_num", "renewal_year"], "leftanti") \
+        .withColumn("source", f.lit("Legacy"))
+    renewals_df = new_renewals_df.unionByName(non_duplicates).withColumn("type_identifier", f.lit("Renewals"))
 
     combined_renewal_count = renewals_df.count()
-    _logger.info(f"{combined_renewal_count} total renewal records.")
+    _logger.info(f"{combined_renewal_count} total renewal records after deduplication.")
+    
+    # Log breakdown by source
+    source_breakdown = renewals_df.groupBy("source").count().collect()
+    for row in source_breakdown:
+        _logger.info(f"{row['count']} renewals from {row['source']}.")
+        
 except Exception as excp:
     _logger.error(f"Error processing renewals data: {excp}.")
     notebook_status = False
-
 
 
 

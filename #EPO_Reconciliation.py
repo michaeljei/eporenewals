@@ -1,5 +1,7 @@
 #EPO_Reconciliation
 
+
+
 import logging
 import datetime
 import pyspark
@@ -13,7 +15,11 @@ logging.basicConfig(format=LOG_FORMAT)
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.INFO)
 
-#Parameters
+
+# ### Parameters
+
+# In[2]:
+
 
 quarterly = True
 epo_renewal_pct_split = 50
@@ -21,13 +27,28 @@ interest_due_year3 = 0.00
 interest_due_year4 = 0.00
 silver_datalake = "" #stuksee3fsbdatmibisilver.dfs.core.windows.net
 date_today = "" #2025-01-03
+
+
+# In[3]:
+
+
 notebook_status = True
+
+
+# In[4]:
+
+
 try:
     fee_path = f"abfss://renewals@{silver_datalake}/epo_minimum_fees.csv"
     fee_amounts_df = spark.read.csv(fee_path, header = True)
 except Exception as excp:
     _logger.error(f"Error retrieving mimnimum fee file {excp}.")
     notebook_status = False
+
+
+# In[5]:
+
+
 try:
     date_today = datetime.datetime.strptime(date_today, "%Y-%m-%d")
 
@@ -44,8 +65,13 @@ except Exception as excp:
     _logger.error(f"Error defining start and end date ranges: {excp}.")
     notebook_status = False
 
-#Queries
-#Renewal
+
+# ### Queries
+
+# #### Renewal
+
+# In[6]:
+
 
 def get_new_renewals_dataframe():
     crm_renewals_query = """
@@ -90,7 +116,11 @@ def get_legacy_renewals_dataframe():
     """
     return spark.sql(cops_renewals_query)
 
-#Restoration
+
+# #### Restoration
+
+# In[7]:
+
 
 def get_legacy_restored_dataframe():
     cops_restore_query = """
@@ -127,7 +157,11 @@ def get_new_restored_dataframe():
     """
     return spark.sql(mds_restore_query)
 
-#Licence of Right
+
+# #### Licence of Right
+
+# In[8]:
+
 
 def get_legacy_lor_dataframe():
     cops_lor_cols = [
@@ -189,7 +223,11 @@ def get_new_lor_dataframe():
     """
     return spark.sql(mds_lor_query)
 
-#Lapse of Right
+
+# ### Lapse of Right
+
+# In[9]:
+
 
 def get_legacy_lapsed_dataframe():
     cops_lapse_query = f"""
@@ -234,7 +272,11 @@ def get_new_lapsed_dataframe():
     """
     return spark.sql(mds_lapse_query)
 
-#Functions
+
+# ### Functions
+
+# In[10]:
+
 
 @f.udf(returnType=ArrayType(StringType()))
 def format_fee_data_udf(fee: float):
@@ -555,7 +597,11 @@ def process_epo_output(data_df, record_type, filter_condition=None, epo_renewal_
 
     return output_df
 
-#Data Processing
+
+# ### Data Processing
+
+# In[11]:
+
 
 try:
     _logger.info("Retrieving restoration data.")
@@ -582,6 +628,11 @@ try:
 except Exception as excp:
     _logger.error(f"Error retrieving licence of right data: {excp}.")
     notebook_status = False
+
+
+# In[12]:
+
+
 try:
     new_renewals_df = get_new_renewals_dataframe().withColumn("late_fee", f.lit(None)).withColumn("late_months", f.lit(None))
     new_renewal_count = new_renewals_df.count()
@@ -602,6 +653,11 @@ try:
 except Exception as excp:
     _logger.error(f"Error processing renewals data: {excp}.")
     notebook_status = False
+
+
+# In[13]:
+
+
 _logger.info(f"Combining renewal, restoration and licence of right data.")
 combined_df = combine_dataframes(renewals_df, combined_restore_df)
 cancelled_lor_df = combined_lor_df.filter(f.col("Addition_Deletion") == "D").drop("Addition_Deletion")
@@ -614,8 +670,18 @@ try:
 except Exception as excp:
   _logger.error(f"Error occurred while writing renewal history table: {excp}.")
   notebook_status = False
+
+
+# In[14]:
+
+
 _logger.info(f"Determining due date when renewal was paid.")
 renewals_df = calculate_renewal_due_dates(renewals_df)
+
+
+# In[15]:
+
+
 _logger.info(f"Determining renewals with Licence of Right endorsement.")
 lor_endoresment_df = combined_lor_df.groupBy("application_num").pivot("Addition_Deletion").agg(f.last("date_processed"))
 renewals_df = renewals_df.join(lor_endoresment_df, how="left", on="application_num")
@@ -623,6 +689,11 @@ renewals_df = renewals_df.withColumn("renewal_comparison_date", f.least(f.col("r
 renewals_df = renewals_df.withColumn("lor_endorsement", f.when(
         (f.col("A") <= f.col("renewal_comparison_date")) & ((f.col("renewal_comparison_date") < f.col("D")) | (f.col("D").isNull())), f.lit("YES")
     ).otherwise(f.lit("NO"))).drop("A", "D")
+
+
+# In[16]:
+
+
 _logger.info(f"Determining the first and last renewal years endorsed by Licence of Right.")
 combined_lor_df = combined_lor_df.withColumn(
     "renewal_year", f.year(f.col("date_processed")) - (f.year(f.col("filing_date"))-1)
@@ -670,6 +741,23 @@ combined_lor_df = addition_lor_df.union(deletion_lor_df) \
 combined_lor_df = combined_lor_df.filter(
     f.col("first_reduced_year") <= 20
 )
+
+
+# In[17]:
+
+
+_logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
+filtered_renewals_df = (
+    calculate_renewal_fee_splits(
+        filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
+    )
+    .drop("late_fee", "late_months")
+)
+
+
+# In[ ]:
+
+
 try:
     _logger.info(f"Filtering EP(UK) records between {start_date} and {end_date}.")
 
@@ -686,21 +774,19 @@ try:
     )
     filtered_lor_count = filtered_lor_df.count()
     _logger.info(f"{filtered_lor_count} licence of rights.")
+    
+    renewals_with_date_diff = renewals_df.filter(
+        f.month(f.col("date_filed")) != f.month(f.col("date_processed"))
+    )
+    date_diff_count = renewals_with_date_diff.count()
+    _logger.info(f"{date_diff_count} renewals have filing and processing dates in different months")
 
-    # Filter by date_processed instead of date_filed to match when fees are received
     filtered_renewals_df = renewals_df.filter( 
         (f.col("date_processed").between(start_date, end_date)) &
         (f.col("publication_num").like("EP%"))
     )
     filtered_renewals_count = filtered_renewals_df.count()
     _logger.info(f"{filtered_renewals_count} renewals.")
-    # Log renewals where filing and processing dates are in different months
-    cross_month_renewals = filtered_renewals_df.filter(
-        f.date_format(f.col("date_filed"), "yyyy-MM") != f.date_format(f.col("date_processed"), "yyyy-MM")
-    )
-    cross_month_count = cross_month_renewals.count()
-    if cross_month_count > 0:
-        _logger.info(f"{cross_month_count} renewals have date_filed and date_processed in different months.")
 except Exception as excp:
     _logger.error(f"Unable to filter inputs according to specified date ranges: {excp}.")
     notebook_status = False
@@ -715,15 +801,12 @@ try:
 except Exception as excp:
     _logger.error(f"Error retrieving lapsed data: {excp}.")
     notebook_status = False
-_logger.info("Calculating fees owed to EPO, including any share of year 3 and year 4 renewals.")
-filtered_renewals_df = (
-    calculate_renewal_fee_splits(
-        filtered_renewals_df, fee_amounts_df, epo_renewal_pct_split, interest_due_year3, interest_due_year4
-    )
-    .drop("late_fee", "late_months")
-)
 
-#Output Generation
+
+# ### Output Generation
+
+# In[ ]:
+
 
 _logger.info(f"Generating fee totals for period between {start_date} and {end_date}.")
 grand_total_prescribed = filtered_renewals_df.select(f.sum("renewal_fee")).collect()[0][0]
@@ -736,7 +819,11 @@ totals = {
     "Grand Total Retained": grand_total_retained
 }
 
-#Generate Monthly EP(UK) Renewal Internal Report
+
+# #### Generate Monthly EP(UK) Renewal Internal Report 
+
+# In[ ]:
+
 
 if not quarterly:
     _logger.info(f"Generating monthly EP(UK) renewal internal report.")
@@ -783,7 +870,11 @@ if not quarterly:
         _logger.error(f"Error occurred while generating monthly renewals report: {excp}.")
         notebook_status = False
 
-#Generate Quarterly EP(UK) Status Internal Report
+
+# #### Generate Quarterly EP(UK) Status Internal Report
+
+# In[ ]:
+
 
 if quarterly:
     _logger.info(f"Generating quarterly EP(UK) status internal report.")
@@ -807,9 +898,8 @@ if quarterly:
         .unionByName(restore_status_df, allowMissingColumns=True) \
         .unionByName(lor_status_df, allowMissingColumns=True)
 
-    # Group by date_processed to match filtering logic
-    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_processed", "MMMM yyyy").alias("Month"), 
-            f.date_format("date_processed", "MM").cast("int").alias("Month_Number")) \
+    epo_monthly_totals = filtered_renewals_df.groupBy(f.date_format("date_filed", "MMMM yyyy").alias("Month"), 
+            f.date_format("date_filed", "MM").cast("int").alias("Month_Number")) \
         .agg(f.sum("total_epo_amount").alias("Amount")) \
         .orderBy(f.col("Month_Number")) \
         .drop("Month_Number")
@@ -834,7 +924,11 @@ if quarterly:
         _logger.error(f"Error occurred while generating quarterly status report: {excp}.")
         notebook_status = False
 
-#Generate Quarterly EPO Reconciliation File
+
+# #### Generate Quarterly EPO Reconciliation File
+
+# In[ ]:
+
 
 if quarterly:
     try:
@@ -861,6 +955,11 @@ if quarterly:
     except Exception as excp:
          _logger.error(f"Unable to generate EPO output: {excp}.")
          notebook_status = False
+
+
+# In[ ]:
+
+
 if quarterly:
     try:
         _logger.info("Writing EPO Reconciliation file to data lake.")
@@ -872,4 +971,3 @@ if quarterly:
     except Exception as excp:
         _logger.error(f"Error occurred while writing EPO reconciliation file: {excp}.")
         notebook_status = False
-mssparkutils.notebook.exit(notebook_status)

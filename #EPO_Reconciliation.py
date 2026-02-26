@@ -1,5 +1,6 @@
 #EPO_Reconciliation
 
+
 import logging
 import datetime
 import pyspark
@@ -16,9 +17,6 @@ _logger.setLevel(logging.INFO)
 
 # ### Parameters
 
-
-
-
 quarterly = True
 epo_renewal_pct_split = 50
 interest_due_year3 = 0.00
@@ -27,13 +25,7 @@ silver_datalake = "" #stuksee3fsbdatmibisilver.dfs.core.windows.net
 date_today = "" #2025-01-03
 
 
-
-
-
 notebook_status = True
-
-
-
 
 
 try:
@@ -42,9 +34,6 @@ try:
 except Exception as excp:
     _logger.error(f"Error retrieving mimnimum fee file {excp}.")
     notebook_status = False
-
-
-
 
 
 try:
@@ -68,9 +57,6 @@ except Exception as excp:
 
 # #### Renewal
 
-
-
-
 def get_new_renewals_dataframe():
     crm_renewals_query = """
         SELECT 
@@ -78,8 +64,9 @@ def get_new_renewals_dataframe():
             IPR.ipo_publicationid AS publication_num,
             IPR.ipo_applicationdate AS filing_date,
             IPR.ipo_bpublicationdate AS grant_date,
-            IPR.ipo_renewalyear AS renewal_year,
-            F.ipo_totalfee AS renewal_fee, 
+            COALESCE(IPR.ipo_renewalyear, 
+                     YEAR(I.ipo_datecompleted) - YEAR(IPR.ipo_applicationdate) + 1) AS renewal_year,
+            COALESCE(F.ipo_totalfee, 0.0) AS renewal_fee, 
             IPR.ipo_nextrenewaldate AS next_renewal_date,
             I.ipo_datefiled AS date_filed,
             I.ipo_datecompleted AS date_processed
@@ -90,9 +77,10 @@ def get_new_renewals_dataframe():
         LEFT JOIN crm_ldb.ipo_fees F ON IPR.ipo_iprightid = F.ipo_rightid
         LEFT JOIN crm_ldb.ipo_feeitems FI ON F.ipo_feesid = FI.ipo_feeid
         WHERE SR.ipo_servicerequesttypeidname = 'Renewals'
+        AND I.ipo_datecompleted IS NOT NULL
     """
     return spark.sql(crm_renewals_query)
-
+    
 def get_legacy_renewals_dataframe():
     cops_renewals_query = """
         SELECT 
@@ -116,9 +104,6 @@ def get_legacy_renewals_dataframe():
 
 
 # #### Restoration
-
-
-
 
 def get_legacy_restored_dataframe():
     cops_restore_query = """
@@ -157,9 +142,6 @@ def get_new_restored_dataframe():
 
 
 # #### Licence of Right
-
-
-
 
 def get_legacy_lor_dataframe():
     cops_lor_cols = [
@@ -224,9 +206,6 @@ def get_new_lor_dataframe():
 
 # ### Lapse of Right
 
-
-
-
 def get_legacy_lapsed_dataframe():
     cops_lapse_query = f"""
         SELECT TRIM(FK_PS_4000_4300_PK_I4000_CS_KY) AS publication_num,
@@ -272,9 +251,6 @@ def get_new_lapsed_dataframe():
 
 
 # ### Functions
-
-
-
 
 @f.udf(returnType=ArrayType(StringType()))
 def format_fee_data_udf(fee: float):
@@ -598,9 +574,6 @@ def process_epo_output(data_df, record_type, filter_condition=None, epo_renewal_
 
 # ### Data Processing
 
-
-
-
 try:
     _logger.info("Retrieving restoration data.")
     legacy_restore_df = get_legacy_restored_dataframe().withColumn("source", f.lit("Legacy"))
@@ -627,11 +600,6 @@ except Exception as excp:
     _logger.error(f"Error retrieving licence of right data: {excp}.")
     notebook_status = False
 
-
-
-
-
-# In[ ]:
 
 try:
     new_renewals_df = get_new_renewals_dataframe().withColumn("late_fee", f.lit(None)).withColumn("late_months", f.lit(None))
@@ -669,8 +637,6 @@ except Exception as excp:
     notebook_status = False
 
 
-
-
 _logger.info(f"Combining renewal, restoration and licence of right data.")
 combined_df = combine_dataframes(renewals_df, combined_restore_df)
 cancelled_lor_df = combined_lor_df.filter(f.col("Addition_Deletion") == "D").drop("Addition_Deletion")
@@ -685,14 +651,8 @@ except Exception as excp:
   notebook_status = False
 
 
-
-
-
 _logger.info(f"Determining due date when renewal was paid.")
 renewals_df = calculate_renewal_due_dates(renewals_df)
-
-
-
 
 
 _logger.info(f"Determining renewals with Licence of Right endorsement.")
@@ -702,9 +662,6 @@ renewals_df = renewals_df.withColumn("renewal_comparison_date", f.least(f.col("r
 renewals_df = renewals_df.withColumn("lor_endorsement", f.when(
         (f.col("A") <= f.col("renewal_comparison_date")) & ((f.col("renewal_comparison_date") < f.col("D")) | (f.col("D").isNull())), f.lit("YES")
     ).otherwise(f.lit("NO"))).drop("A", "D")
-
-
-
 
 
 _logger.info(f"Determining the first and last renewal years endorsed by Licence of Right.")
@@ -756,9 +713,6 @@ combined_lor_df = combined_lor_df.filter(
 )
 
 
-
-
-
 try:
     _logger.info(f"Filtering EP(UK) records between {start_date} and {end_date}.")
 
@@ -807,9 +761,6 @@ except Exception as excp:
 
 # ### Output Generation
 
-
-
-
 _logger.info(f"Generating fee totals for period between {start_date} and {end_date}.")
 grand_total_prescribed = filtered_renewals_df.select(f.sum("renewal_fee")).collect()[0][0]
 grand_total_remitted = filtered_renewals_df.select(f.sum("total_epo_amount")).collect()[0][0]
@@ -823,9 +774,6 @@ totals = {
 
 
 # #### Generate Monthly EP(UK) Renewal Internal Report 
-
-
-
 
 if not quarterly:
     _logger.info(f"Generating monthly EP(UK) renewal internal report.")
@@ -874,9 +822,6 @@ if not quarterly:
 
 
 # #### Generate Quarterly EP(UK) Status Internal Report
-
-
-
 
 if quarterly:
     _logger.info(f"Generating quarterly EP(UK) status internal report.")
@@ -929,9 +874,6 @@ if quarterly:
 
 # #### Generate Quarterly EPO Reconciliation File
 
-
-
-
 if quarterly:
     try:
         qrtly_renewals_df = process_epo_output(filtered_renewals_df, 200)
@@ -959,9 +901,6 @@ if quarterly:
          notebook_status = False
 
 
-
-
-
 if quarterly:
     try:
         _logger.info("Writing EPO Reconciliation file to data lake.")
@@ -973,3 +912,6 @@ if quarterly:
     except Exception as excp:
         _logger.error(f"Error occurred while writing EPO reconciliation file: {excp}.")
         notebook_status = False
+
+
+mssparkutils.notebook.exit(notebook_status)

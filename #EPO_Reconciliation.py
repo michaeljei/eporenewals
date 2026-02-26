@@ -600,6 +600,17 @@ except Exception as excp:
     _logger.error(f"Error retrieving licence of right data: {excp}.")
     notebook_status = False
 
+try:
+    _logger.info("Retrieving lapsed data.")
+    legacy_lapse_df = get_legacy_lapsed_dataframe().withColumn("source", f.lit("Legacy"))
+    new_lapse_df = get_new_lapsed_dataframe().withColumn("source", f.lit("Dynamics"))
+
+    combined_lapsed_df = legacy_lapse_df.union(new_lapse_df).dropDuplicates()
+    combined_lapsed_count = combined_lapsed_df.count()
+    _logger.info(f"{combined_lapsed_count} lapsed rights.")
+except Exception as excp:
+    _logger.error(f"Error retrieving lapsed data: {excp}.")
+    notebook_status = False
 
 try:
     new_renewals_df = get_new_renewals_dataframe().withColumn("late_fee", f.lit(None)).withColumn("late_months", f.lit(None))
